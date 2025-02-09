@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 
 const pdfPath = "./data/pdf";
 
-class DB {
+export class DB {
   pdf;
 
   constructor() {
@@ -19,5 +19,3 @@ class DB {
 }
 
 const db = new DB();
-
-module.exports = db;
