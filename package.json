@@ -1,0 +1,19 @@
+{
+  "name": "pdf-maker",
+  "version": "1.0.0",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.1"
+  },
+  "dependencies": {
+    "docx": "^9.1.1",
+    "express": "^4.21.2"
+  }
+}
