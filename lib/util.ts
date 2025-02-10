@@ -1,9 +1,5 @@
 import * as fs from "node:fs/promises";
-
-interface Util {
-  deleteFile: (path: string) => Promise<void>;
-  deleteFolder: (path: string) => Promise<void>;
-}
+import type { Util } from "../src/types";
 
 // Delete a file/folder if it exists, else throw an error.
 

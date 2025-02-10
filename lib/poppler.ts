@@ -9,7 +9,7 @@ import { spawn } from "node:child_process";
 // Convert filename.pdf to plain text and preserve the layout:
 // pdftotext -layout filename.pdf
 
-const makeText = async (
+export const makeText = async (
   fullPath: string,
   textPath: string
 ): Promise<string | void> => {
@@ -29,5 +29,3 @@ const makeText = async (
     });
   });
 };
-
-module.exports = makeText;

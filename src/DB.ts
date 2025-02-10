@@ -1,9 +1,10 @@
 import * as fs from "node:fs";
+import type { Pdf } from "./types";
 
 const pdfPath = "./data/pdf";
 
 export class DB {
-  pdf;
+  pdf: Pdf[];
 
   constructor() {
     this.pdf = JSON.parse(fs.readFileSync(pdfPath, "utf-8"));
@@ -17,5 +18,3 @@ export class DB {
     fs.writeFileSync(pdfPath, JSON.stringify(this.pdf));
   }
 }
-
-const db = new DB();

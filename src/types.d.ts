@@ -1,13 +1,28 @@
-type options = {
+export type options = {
   pdfId: string;
   name: string;
   extension: string;
 };
 
-interface PDFtoWordService {
-  uploadPDF: (details: options) => {};
+export interface PDFtoWordService {
+  uploadPDF: (details: options) => Promsie<void>;
 
-  getTextFile: () => {};
+  getPDF: (pfdId: string) => Promise<Pdf | undefined>;
 
-  getWordFile: () => {};
+  getTextFile: () => Promise<void>;
+
+  getWordFile: () => Promise<void>;
+}
+
+export interface Util {
+  deleteFile: (path: string) => Promise<void>;
+  deleteFolder: (path: string) => Promise<void>;
+}
+
+export interface Pdf {
+  id: number;
+  pdfId: string;
+  name: string;
+  extension: string;
+  hasTextFile?: boolean;
 }
