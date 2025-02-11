@@ -75,3 +75,61 @@ export async function convertPDFToWord(req: Request, res: Response) {
     });
   }
 }
+
+export async function convertPDFToPNG(req: Request, res: Response) {
+  const { pdfId } = req.params;
+  const pdf = await PDFtoWordService.getPDF(pdfId);
+
+  try {
+    if (pdf) {
+      await fs.mkdir(`./storage/${pdf.pdfId}/pdf-image-folder/`);
+
+      const fullPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
+      const imagePath = `./storage/${pdf.pdfId}/pdf-image-folder/original.png`;
+
+      await poppler.makeImage(fullPath, imagePath);
+    }
+    res.status(200).json({
+      status: "Success",
+      message: "PDF converted to PNG successfully.",
+    });
+  } catch (e) {
+    if (pdf) {
+      util.deleteFolder(`./storage/${pdf.pdfId}/pdf-image-folder/`);
+      util.deleteFile(`./storage/${pdf.pdfId}/pdf-image-folder/original.png`);
+    }
+    res.status(500).json({
+      status: "Failed",
+      message: `Operation Failed ${e}`,
+    });
+  }
+}
+
+export async function compressPDF(req: Request, res: Response) {
+  const { pdfId } = req.params;
+  const pdf = await PDFtoWordService.getPDF(pdfId);
+
+  try {
+    if (pdf) {
+      const fullPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
+      const imagePath = `./storage/${pdf.pdfId}/pdf-image-folder/original.png`;
+
+      await poppler.makeImage(fullPath, imagePath);
+    }
+    res.status(200).json({
+      status: "success",
+      message: "Word document made successfully!",
+    });
+  } catch (e) {
+    if (pdf) {
+      util.deleteFolder(`./storage/${pdf.pdfId}/pdf-image-folder/`);
+      util.deleteFile(`./storage/${pdf.pdfId}/pdf-image-folder/original.png`);
+    }
+    res.status(500).json({
+      status: "Failed",
+      message: `Operation Failed ${e}`,
+    });
+  }
+}
+
+export async function mergePF(req: Request, res: Response) {}

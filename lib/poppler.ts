@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { ChildProcess, spawn } from "node:child_process";
 
 // convert filename.pdf to plain text and print to stdout.
 // pdftotext filename.pdf -- command
@@ -21,6 +21,27 @@ export const makeText = async (
         resolve();
       } else {
         reject(`Poppler exited with this code ${code}`);
+      }
+    });
+
+    poppler.on("error", (err) => {
+      reject(err);
+    });
+  });
+};
+
+export const makeImage = async (
+  inputFilePath: string,
+  outputFilePath: string
+): Promise<string | void> => {
+  return new Promise((resolve, reject) => {
+    const poppler = spawn("pdftoppm", [inputFilePath, outputFilePath, "-png"]);
+
+    poppler.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(`Poppler exited with code ${code}`);
       }
     });
 
