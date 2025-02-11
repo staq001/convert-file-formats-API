@@ -7,6 +7,7 @@ import { util } from "../../lib/util";
 import { PDFToWordService } from "../services/pdftoword.services";
 import * as poppler from "../../lib/poppler";
 import * as docx from "../../lib/docx";
+import * as zlib from "../../lib/zlib";
 
 const PDFtoWordService = new PDFToWordService();
 
@@ -51,15 +52,20 @@ export async function convertPDFToWord(req: Request, res: Response) {
   const pdf = await PDFtoWordService.getPDF(pdfId);
 
   try {
-    if (pdf) {
-      const fullPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
-      const textPath = `./storage/${pdf.pdfId}/original.txt`;
-
-      await poppler.makeText(fullPath, textPath);
-
-      const targetWordPath = `./storage/${pdf.pdfId}/original.docx`;
-      await docx.convertTextToDocx(textPath, targetWordPath);
+    if (!pdf) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "PDF file not found" });
     }
+
+    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
+    const textPath = `./storage/${pdf.pdfId}/original.txt`;
+
+    await poppler.makeText(originalPath, textPath);
+
+    const targetWordPath = `./storage/${pdf.pdfId}/original.docx`;
+    await docx.convertTextToDocx(textPath, targetWordPath);
+
     res.status(200).json({
       status: "success",
       message: "Word document made successfully!",
@@ -81,14 +87,19 @@ export async function convertPDFToPNG(req: Request, res: Response) {
   const pdf = await PDFtoWordService.getPDF(pdfId);
 
   try {
-    if (pdf) {
-      await fs.mkdir(`./storage/${pdf.pdfId}/pdf-image-folder/`);
-
-      const fullPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
-      const imagePath = `./storage/${pdf.pdfId}/pdf-image-folder/original.png`;
-
-      await poppler.makeImage(fullPath, imagePath);
+    if (!pdf) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "PDF file not found" });
     }
+
+    await fs.mkdir(`./storage/${pdf.pdfId}/pdf-image-folder/`);
+
+    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
+    const imagePath = `./storage/${pdf.pdfId}/pdf-image-folder/original.png`;
+
+    await poppler.makeImage(originalPath, imagePath);
+
     res.status(200).json({
       status: "Success",
       message: "PDF converted to PNG successfully.",
@@ -110,15 +121,20 @@ export async function compressPDF(req: Request, res: Response) {
   const pdf = await PDFtoWordService.getPDF(pdfId);
 
   try {
-    if (pdf) {
-      const fullPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
-      const imagePath = `./storage/${pdf.pdfId}/pdf-image-folder/original.png`;
-
-      await poppler.makeImage(fullPath, imagePath);
+    if (!pdf) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "PDF file not found" });
     }
+
+    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
+    const destination = `./storage/${pdf.pdfId}/original-compressed.pdf`;
+
+    await zlib.compressPDF(originalPath, destination);
+
     res.status(200).json({
-      status: "success",
-      message: "Word document made successfully!",
+      status: "Success",
+      message: "PDF file compressed successfully!",
     });
   } catch (e) {
     if (pdf) {
@@ -132,4 +148,41 @@ export async function compressPDF(req: Request, res: Response) {
   }
 }
 
-export async function mergePF(req: Request, res: Response) {}
+export async function mergePF(req: Request, res: Response) {
+  const { firstPdfId, secondPdfId } = req.params;
+
+  const first = await PDFtoWordService.getPDF(firstPdfId);
+  const second = await PDFtoWordService.getPDF(secondPdfId);
+
+  try {
+    if (!first || !second) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "PDF files not found" });
+    }
+
+    const firstFilePath = `./storage/${first.pdfId}/original.${first.extension}`;
+    const secondFilePath = `./storage/${second.pdfId}/original.${second.extension}`;
+
+    const mergedFileDestination = `./storage/${first.pdfId}-${second.pdfId}/merged.pdf`;
+
+    await poppler.mergePDF(
+      firstFilePath,
+      secondFilePath,
+      mergedFileDestination
+    );
+
+    res.status(200).json({
+      status: "Success",
+      message: "PDF file compressed successfully!",
+    });
+  } catch (e) {
+    if (first && second) {
+      util.deleteFile(`./storage/${first.pdfId}-${second.pdfId}/merged.pdf/`);
+    }
+    res.status(500).json({
+      status: "Failed",
+      message: `Operation Failed ${e}`,
+    });
+  }
+}
