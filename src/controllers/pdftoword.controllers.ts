@@ -7,7 +7,8 @@ import { util } from "../../lib/util";
 import { PDFToWordService } from "../services/pdftoword.services";
 import * as poppler from "../../lib/poppler";
 import * as docx from "../../lib/docx";
-import * as zlib from "../../lib/zlib";
+import Path from "node:path";
+import * as gs from "../../lib/ghostscript";
 
 const PDFtoWordService = new PDFToWordService();
 
@@ -39,7 +40,7 @@ export async function uploadPDF(req: Request, res: Response) {
     });
   } catch (e) {
     // Delete the folder
-    util.deleteFolder(`./storage/${pdfId}`);
+    await util.deleteFolder(`./storage/${pdfId}`);
     res.status(500).json({
       status: "failed!",
       message: `Operation failed! ${e}`,
@@ -58,12 +59,21 @@ export async function convertPDFToWord(req: Request, res: Response) {
         .json({ status: "failed", message: "PDF file not found" });
     }
 
-    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
-    const textPath = `./storage/${pdf.pdfId}/original.txt`;
+    const originalPath = Path.join(
+      __dirname,
+      `./storage/${pdf.pdfId}/original.${pdf.extension}`
+    );
+    const textPath = Path.join(
+      __dirname,
+      `./storage/${pdf.pdfId}/original.txt`
+    );
 
     await poppler.makeText(originalPath, textPath);
 
-    const targetWordPath = `./storage/${pdf.pdfId}/original.docx`;
+    const targetWordPath = Path.join(
+      __dirname,
+      `./storage/${pdf.pdfId}/original.docx`
+    );
     await docx.convertTextToDocx(textPath, targetWordPath);
 
     res.status(200).json({
@@ -72,8 +82,12 @@ export async function convertPDFToWord(req: Request, res: Response) {
     });
   } catch (e) {
     if (pdf) {
-      util.deleteFile(`./storage/${pdf.pdfId}/original.txt`);
-      util.deleteFile(`./storage/${pdf.pdfId}/original.docx`);
+      await util.deleteFile(
+        Path.join(__dirname, `./storage/${pdf.pdfId}/original.txt`)
+      );
+      await util.deleteFile(
+        Path.join(__dirname, `./storage/${pdf.pdfId}/original.docx`)
+      );
     }
     res.status(500).json({
       status: "Failed",
@@ -95,8 +109,14 @@ export async function convertPDFToPNG(req: Request, res: Response) {
 
     await fs.mkdir(`./storage/${pdf.pdfId}/pdf-image-folder/`);
 
-    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
-    const imagePath = `./storage/${pdf.pdfId}/pdf-image-folder/original.png`;
+    const originalPath = Path.join(
+      __dirname,
+      `./storage/${pdf.pdfId}/original.${pdf.extension}`
+    );
+    const imagePath = Path.join(
+      __dirname,
+      `./storage/${pdf.pdfId}/pdf-image-folder/original.png`
+    );
 
     await poppler.makeImage(originalPath, imagePath);
 
@@ -106,8 +126,15 @@ export async function convertPDFToPNG(req: Request, res: Response) {
     });
   } catch (e) {
     if (pdf) {
-      util.deleteFolder(`./storage/${pdf.pdfId}/pdf-image-folder/`);
-      util.deleteFile(`./storage/${pdf.pdfId}/pdf-image-folder/original.png`);
+      await util.deleteFolder(
+        Path.join(__dirname, `./storage/${pdf.pdfId}/pdf-image-folder/`)
+      );
+      await util.deleteFile(
+        Path.join(
+          __dirname,
+          `./storage/${pdf.pdfId}/pdf-image-folder/original.png`
+        )
+      );
     }
     res.status(500).json({
       status: "Failed",
@@ -127,10 +154,16 @@ export async function compressPDF(req: Request, res: Response) {
         .json({ status: "failed", message: "PDF file not found" });
     }
 
-    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
-    const destination = `./storage/${pdf.pdfId}/original-compressed.pdf`;
+    const originalPath = Path.join(
+      __dirname,
+      `./storage/${pdf.pdfId}/original.${pdf.extension}`
+    );
+    const destination = Path.join(
+      __dirname,
+      `./storage/${pdf.pdfId}/original-compressed.pdf`
+    );
 
-    await zlib.compressPDF(originalPath, destination);
+    await gs.compressPDF(originalPath, destination);
 
     res.status(200).json({
       status: "Success",
@@ -138,8 +171,15 @@ export async function compressPDF(req: Request, res: Response) {
     });
   } catch (e) {
     if (pdf) {
-      util.deleteFolder(`./storage/${pdf.pdfId}/pdf-image-folder/`);
-      util.deleteFile(`./storage/${pdf.pdfId}/pdf-image-folder/original.png`);
+      await util.deleteFolder(
+        Path.join(__dirname, `./storage/${pdf.pdfId}/pdf-image-folder/`)
+      );
+      await util.deleteFile(
+        Path.join(
+          __dirname,
+          `./storage/${pdf.pdfId}/pdf-image-folder/original.png`
+        )
+      );
     }
     res.status(500).json({
       status: "Failed",
@@ -161,10 +201,19 @@ export async function mergePF(req: Request, res: Response) {
         .json({ status: "failed", message: "PDF files not found" });
     }
 
-    const firstFilePath = `./storage/${first.pdfId}/original.${first.extension}`;
-    const secondFilePath = `./storage/${second.pdfId}/original.${second.extension}`;
+    const firstFilePath = Path.join(
+      __dirname,
+      `./storage/${first.pdfId}/original.${first.extension}`
+    );
+    const secondFilePath = Path.join(
+      __dirname,
+      `./storage/${second.pdfId}/original.${second.extension}`
+    );
 
-    const mergedFileDestination = `./storage/${first.pdfId}-${second.pdfId}/merged.pdf`;
+    const mergedFileDestination = Path.join(
+      __dirname,
+      `./storage/${first.pdfId}-${second.pdfId}/merged.pdf`
+    );
 
     await poppler.mergePDF(
       firstFilePath,
@@ -174,11 +223,16 @@ export async function mergePF(req: Request, res: Response) {
 
     res.status(200).json({
       status: "Success",
-      message: "PDF file compressed successfully!",
+      message: "PDF file merged successfully!",
     });
   } catch (e) {
     if (first && second) {
-      util.deleteFile(`./storage/${first.pdfId}-${second.pdfId}/merged.pdf/`);
+      await util.deleteFile(
+        Path.join(
+          __dirname,
+          `./storage/${first.pdfId}-${second.pdfId}/merged.pdf/`
+        )
+      );
     }
     res.status(500).json({
       status: "Failed",

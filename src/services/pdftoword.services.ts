@@ -24,9 +24,6 @@ export class PDFToWordService implements PDFtoWordService {
     // tell the db we have a text file for the just uploaded pdf file.
     this.db.update();
     const pdf = this.db.pdf.find((pdf) => pdf.pdfId === pdfId);
-    if (pdf) {
-      pdf.hasTextFile = true;
-    }
     this.db.save();
     return pdf;
   }
