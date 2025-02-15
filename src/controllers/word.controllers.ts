@@ -5,6 +5,7 @@ import fs from "node:fs/promises";
 import { pipeline } from "node:stream/promises";
 import { util } from "../../lib/util";
 import * as pandoc from "../../lib/pandoc";
+import * as libreoffice from "../../lib/libreoffice";
 import * as docx from "../../lib/docx";
 import { WordService } from "../services/word.services";
 import Path from "node:path";
@@ -101,12 +102,8 @@ export async function convertDocxToPDF(req: Request, res: Response) {
       __dirname,
       `./storage/${docx.docxId}/original.${docx.extension}`
     );
-    const outputFilePath = Path.join(
-      __dirname,
-      `./storage/${docx.docxId}/original.pdf`
-    );
 
-    await pandoc.convertDocxToPDF(inputFilePath, outputFilePath);
+    await libreoffice.convertDocxToPDF(inputFilePath);
   } catch (e) {
     if (docx) {
       await util.deleteFile(
@@ -114,9 +111,6 @@ export async function convertDocxToPDF(req: Request, res: Response) {
           __dirname,
           `./storage/${docx.docxId}/original.${docx.extension}`
         )
-      );
-      await util.deleteFile(
-        Path.join(__dirname, `./storage/${docx.docxId}/original.html`)
       );
       res.status(500).json({
         status: "failed",

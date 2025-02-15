@@ -48,7 +48,10 @@ export async function uploadPDF(req: Request, res: Response) {
   }
 }
 
-export async function convertPDFToWord(req: Request, res: Response) {
+export async function convertPDFToWord(
+  req: Request<{ pdfId: string }>,
+  res: Response
+) {
   const { pdfId } = req.params;
   const pdf = await PDFtoWordService.getPDF(pdfId);
 
@@ -96,7 +99,10 @@ export async function convertPDFToWord(req: Request, res: Response) {
   }
 }
 
-export async function convertPDFToPNG(req: Request, res: Response) {
+export async function convertPDFToPNG(
+  req: Request,
+  res: Response
+): Promise<any> {
   const { pdfId } = req.params;
   const pdf = await PDFtoWordService.getPDF(pdfId);
 

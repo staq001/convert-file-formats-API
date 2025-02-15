@@ -1,13 +1,17 @@
 import { spawn } from "node:child_process";
 
-export async function convertDocxToHTML(
-  inputFilePath: string,
-  outputFilePath: string
+export async function convertDocxToPDF(
+  inputFilePath: string
 ): Promise<string | void> {
   return new Promise((resolve, reject) => {
-    const pandoc = spawn("pandoc", [inputFilePath, "-o", outputFilePath]);
+    const libreoffice = spawn("libreoffice", [
+      "--headless",
+      "--convert-to",
+      "pdf",
+      inputFilePath,
+    ]);
 
-    pandoc.on("close", (code) => {
+    libreoffice.on("close", (code) => {
       if (code === 0) {
         resolve();
       } else {
@@ -15,7 +19,7 @@ export async function convertDocxToHTML(
       }
     });
 
-    pandoc.on("error", (error) => {
+    libreoffice.on("error", (error) => {
       if (error) {
         reject(error);
       }
