@@ -47,7 +47,10 @@ export async function uploadDocx(req: Request, res: Response) {
   }
 }
 
-export async function convertDocxToHTML(req: Request, res: Response) {
+export async function convertDocxToHTML(
+  req: Request<{ docxId: string }>,
+  res: Response
+) {
   const { docxId } = req.params;
   const docx = await wordService.getDocxFile(docxId);
 
@@ -87,7 +90,10 @@ export async function convertDocxToHTML(req: Request, res: Response) {
   }
 }
 
-export async function convertDocxToPDF(req: Request, res: Response) {
+export async function convertDocxToPDF(
+  req: Request<{ docxId: string }>,
+  res: Response
+) {
   const { docxId } = req.params;
   const docx = await wordService.getDocxFile(docxId);
 
@@ -117,5 +123,24 @@ export async function convertDocxToPDF(req: Request, res: Response) {
         message: "Operation failed!",
       });
     }
+  }
+}
+
+export async function getDocx(req: Request<{ docxId: string }>, res: Response) {
+  const { docxId } = req.params;
+
+  const docx = wordService.getDocxFile(docxId);
+
+  try {
+    if (!docx) {
+      return res.status(404).json({
+        status: "Failed",
+        message: "PDF not found",
+      });
+    }
+
+    res.status(200).send(docx);
+  } catch (e) {
+    res.status(500).send(`An error occured: ${e}`);
   }
 }

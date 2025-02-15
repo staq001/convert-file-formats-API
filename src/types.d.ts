@@ -8,10 +8,6 @@ export interface PDFtoWordService {
   uploadPDF: (details: options) => Promsie<void>;
 
   getPDF: (pfdId: string) => Promise<Pdf | undefined>;
-
-  getTextFile: () => Promise<void>;
-
-  getWordFile: () => Promise<void>;
 }
 
 export interface DocxService {

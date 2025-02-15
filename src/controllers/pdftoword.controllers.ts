@@ -100,7 +100,7 @@ export async function convertPDFToWord(
 }
 
 export async function convertPDFToPNG(
-  req: Request,
+  req: Request<{ pdfId: string }>,
   res: Response
 ): Promise<any> {
   const { pdfId } = req.params;
@@ -149,7 +149,10 @@ export async function convertPDFToPNG(
   }
 }
 
-export async function compressPDF(req: Request, res: Response) {
+export async function compressPDF(
+  req: Request<{ pdfId: string }>,
+  res: Response
+) {
   const { pdfId } = req.params;
   const pdf = await PDFtoWordService.getPDF(pdfId);
 
@@ -194,7 +197,10 @@ export async function compressPDF(req: Request, res: Response) {
   }
 }
 
-export async function mergePF(req: Request, res: Response) {
+export async function mergePF(
+  req: Request<{ firstPdfId: string; secondPdfId: string }>,
+  res: Response
+) {
   const { firstPdfId, secondPdfId } = req.params;
 
   const first = await PDFtoWordService.getPDF(firstPdfId);
@@ -244,5 +250,24 @@ export async function mergePF(req: Request, res: Response) {
       status: "Failed",
       message: `Operation Failed ${e}`,
     });
+  }
+}
+
+export async function getPDF(req: Request<{ pdfId: string }>, res: Response) {
+  const { pdfId } = req.params;
+
+  const pdf = PDFtoWordService.getPDF(pdfId);
+
+  try {
+    if (!pdf) {
+      return res.status(404).json({
+        status: "Failed",
+        message: "PDF not found",
+      });
+    }
+
+    res.status(200).send(pdf);
+  } catch (e) {
+    res.status(500).send(`An error occured: ${e}`);
   }
 }

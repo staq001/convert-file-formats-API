@@ -15,6 +15,10 @@ router.put("/api/convert-pdf-to-image/:pdfId", PDF.convertPDFToPNG as any);
 // compress PDF
 router.put("/api/compress-pdf/:pdfId", PDF.compressPDF as any);
 
-router.put("/api/merge-pdfs/:pdfId-1/:pdfId-2", PDF.mergePF as any);
+// merge two PDF files
+router.put("/api/merge-pdfs/:firstPdfId/:secondPdfId", PDF.mergePF as any);
+
+// get a specific pdf file
+router.get("/api/get-pdf-file", PDF.getPDF as any);
 
 export { router };
