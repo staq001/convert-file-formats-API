@@ -9,30 +9,49 @@ import * as poppler from "../../lib/poppler";
 import * as docx from "../../lib/docx";
 import Path from "node:path";
 import * as gs from "../../lib/ghostscript";
+import { WordService } from "../services/word.services";
 
+const wordService = new WordService();
 const PDFtoWordService = new PDFToWordService();
 
-export async function uploadPDF(req: Request, res: Response) {
+export async function uploadFile(req: Request, res: Response) {
   const specifiedFileName = req.headers.filename;
 
   const extension =
     typeof specifiedFileName === "string"
       ? path.extname(specifiedFileName).substring(1).toLowerCase()
-      : "pdf";
+      : undefined;
   const name =
     typeof specifiedFileName === "string"
       ? path.parse(specifiedFileName).name
       : "unspecified name";
-  const pdfId = crypto.randomBytes(4).toString();
+
+  let id = crypto.randomBytes(4).toString();
 
   try {
-    await fs.mkdir(`./storage/${pdfId}`);
-    const fullPath = `./storage/${pdfId}/original.${extension}`;
-    const file = await fs.open(fullPath, "w");
-    const fileStream = file.createWriteStream();
+    switch (extension) {
+      case "pdf":
+        const pdfId = id;
+        await fs.mkdir(`./storage/${pdfId}`);
+        const fullPath = `./storage/${pdfId}/original.${extension}`;
+        const file = await fs.open(fullPath, "w");
+        const fileStream = file.createWriteStream();
 
-    await pipeline(req, fileStream);
-    await PDFtoWordService.uploadPDF({ extension, pdfId, name });
+        await pipeline(req, fileStream);
+        await PDFtoWordService.uploadPDF({ extension, pdfId, name });
+        break;
+
+      case "docx":
+        const docxId = id;
+
+        await fs.mkdir(`./storage/${docxId}`);
+        const originalPath = `./storage/${docxId}/original.${extension}`;
+        const docxFile = await fs.open(originalPath, "w");
+        const docxFileStream = docxFile.createWriteStream();
+
+        await pipeline(req, docxFileStream);
+        await wordService.uploadDocxFile({ extension, docxId, name });
+    }
 
     res.status(201).json({
       status: "success",
@@ -40,7 +59,7 @@ export async function uploadPDF(req: Request, res: Response) {
     });
   } catch (e) {
     // Delete the folder
-    await util.deleteFolder(`./storage/${pdfId}`);
+    await util.deleteFolder(`./storage/${id}`);
     res.status(500).json({
       status: "failed!",
       message: `Operation failed! ${e}`,

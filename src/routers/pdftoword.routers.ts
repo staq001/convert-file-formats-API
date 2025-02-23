@@ -4,7 +4,7 @@ import * as PDF from "../controllers/pdftoword.controllers";
 const router = Router();
 
 // upload PDF file.
-router.post("/api/upload-pdf/", PDF.uploadPDF);
+router.post("/api/upload-pdf/", PDF.uploadFile);
 
 // convert PDF to Word
 router.put("/api/convert-pdf-to-word/:pdfId", PDF.convertPDFToWord as any);
