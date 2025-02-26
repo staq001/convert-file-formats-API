@@ -1,0 +1,160 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+html {
+  font-size: 75.5%;
+  box-sizing: border-box;
+}
+
+body {
+  /* background-color: #edecec1f; */
+  font-family: sans-serif;
+}
+
+h2 {
+  margin-top: 2.4rem;
+  margin-left: 1.2rem;
+  padding: 1.4rem;
+
+  font-size: 2.4rem;
+  font-family: inherit;
+  text-align: center;
+}
+
+.logo {
+  height: 5.2rem;
+  align-self: center;
+  margin-bottom: 4rem;
+}
+
+.under-h2-paragraph {
+  margin-right: 4.8rem;
+  margin-left: 4.8rem;
+  margin-bottom: 2.4rem;
+  padding-right: 4.8rem;
+  padding-left: 4.8rem;
+  padding-bottom: 3.6rem;
+  font-size: 2rem;
+  font-family: inherit;
+  text-align: center;
+}
+
+.container {
+  background-color: #fff;
+  padding: 2.4rem;
+
+  border-radius: 0.5rem;
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+ul a {
+  margin-right: 3rem;
+  font-weight: 200;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+ul a:hover,
+ul a:active {
+  color: #666363;
+  transition: all 0.2s;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 1.5rem 0.5rem;
+
+  margin-left: 3.6rem;
+  margin-right: 3.6rem;
+}
+
+main a {
+  background-color: #fff;
+  margin: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
+  font-family: inherit;
+
+  padding: 2rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: #000;
+}
+
+/* main a:link,
+main a:visited {
+  color: #ccc;
+  transition: all 0.2s;
+} */
+
+main a p {
+  margin-bottom: 2.4rem;
+  margin-top: 1.2rem;
+  padding-bottom: 2.2rem;
+  font-weight: 400;
+  font-size: 2rem;
+}
+
+main a span {
+  font-weight: 100;
+  font-size: 1.5rem;
+  color: #666363;
+}
+
+main a:hover,
+main a:active {
+  background-color: #cccccc19;
+  transition: all 0.4s;
+}
+
+footer {
+  padding: 3.6rem;
+  margin-top: 3.6rem;
+  text-align: center;
+  border-top: 1px solid #ccc;
+}
+
+/* PAGES */
+/* .compressed-h2 {
+  margin-bottom: 4.8rem;
+} */
+
+button {
+  justify-self: center;
+}
+
+.upload {
+  cursor: pointer;
+  font-size: 4rem;
+  margin-top: 5.2rem;
+  margin-left: 8rem;
+  margin-right: 8rem;
+  margin-bottom: 4.8rem;
+
+  height: 10rem;
+  width: 80rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.upload:hover,
+.upload:active {
+  background-color: #18ff1485;
+}
+
+.compressed-foot {
+  margin-top: 7.2rem;
+}
