@@ -2,11 +2,7 @@ import { DB } from "../DB";
 import type { PDFtoWordService, options, Pdf } from "../types";
 
 export class PDFToWordService implements PDFtoWordService {
-  private db;
-
-  constructor() {
-    this.db = new DB();
-  }
+  private db = new DB();
 
   public async uploadPDF(details: options) {
     // upload to storage and save to artificial DB

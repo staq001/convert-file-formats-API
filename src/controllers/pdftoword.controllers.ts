@@ -15,7 +15,7 @@ const wordService = new WordService();
 const PDFtoWordService = new PDFToWordService();
 
 export async function uploadFile(req: Request, res: Response) {
-  const specifiedFileName = req.headers.filename;
+  const specifiedFileName = await req.headers.filename;
 
   const extension =
     typeof specifiedFileName === "string"
@@ -26,7 +26,8 @@ export async function uploadFile(req: Request, res: Response) {
       ? path.parse(specifiedFileName).name
       : "unspecified name";
 
-  let id = crypto.randomBytes(4).toString();
+  let id = crypto.randomBytes(4).toString("hex");
+  await util.checkPath("./storage");
 
   try {
     switch (extension) {
@@ -38,6 +39,8 @@ export async function uploadFile(req: Request, res: Response) {
         const fileStream = file.createWriteStream();
 
         await pipeline(req, fileStream);
+
+        await file.close();
         await PDFtoWordService.uploadPDF({ extension, pdfId, name });
         break;
 
@@ -50,6 +53,7 @@ export async function uploadFile(req: Request, res: Response) {
         const docxFileStream = docxFile.createWriteStream();
 
         await pipeline(req, docxFileStream);
+        docxFile.close();
         await wordService.uploadDocxFile({ extension, docxId, name });
     }
 
@@ -58,6 +62,7 @@ export async function uploadFile(req: Request, res: Response) {
       message: "The file was successfully uploaded!",
     });
   } catch (e) {
+    console.log(e);
     // Delete the folder
     await util.deleteFolder(`./storage/${id}`);
     res.status(500).json({
@@ -66,6 +71,24 @@ export async function uploadFile(req: Request, res: Response) {
     });
   }
 }
+
+// export async function uploadFile(req: Request, res: Response) {
+//   const specifiedFileName = req.headers.filename;
+
+//   try {
+//     util.checkPath("./storage");
+
+//     const file = await fs.open(`./storage/${specifiedFileName}`, "w");
+//     const fileStream = file.createWriteStream();
+
+//     await pipeline(req, fileStream);
+//     file.close();
+//     res.status(200).send("Went well unoos");
+//   } catch (e) {
+//     console.log(e);
+//     res.status(494).json({ error: "A mistake occurred", e });
+//   }
+// }
 
 export async function convertPDFToWord(
   req: Request<{ pdfId: string }>,

@@ -19,6 +19,7 @@ export interface DocxService {
 export interface Util {
   deleteFile: (path: string) => Promise<void>;
   deleteFolder: (path: string) => Promise<void>;
+  checkPath: (path: string) => Promise<void>;
 }
 
 export interface Pdf {
