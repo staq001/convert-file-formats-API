@@ -21,6 +21,6 @@ export class DB {
 
   save() {
     fs.writeFileSync(this.pdfPath, JSON.stringify(this.pdf));
-    fs.writeFileSync(this.docxPath, JSON.stringify(this.pdf));
+    fs.writeFileSync(this.docxPath, JSON.stringify(this.docx));
   }
 }

@@ -38,10 +38,20 @@
     <p class="under-h2-paragraph">
       Convert a PDF file to an easily editable DOCX file.
     </p>
-    <button class="upload">Select PDF file</button>
+    <input type="file" id="fileInput" style="display: none" />
+    <button class="upload" id="uploadFile">Select PDF file</button>
+    <button class="upload btn2" id="convert-pdf" style="display: none">
+      Convert PDF To DOCX
+    </button>
+    <button class="upload btn3" id="download-pdf" style="display: none">
+      Download DOCX File
+    </button>
+
     <main></main>
     <footer class="compressed-foot">
       <p>© Staq 2025</p>
     </footer>
+
+    <script src="../js/pdftodocx.js"></script>
   </body>
 </html>

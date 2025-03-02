@@ -34,7 +34,6 @@ export interface Docx {
   docxId: string;
   name: string;
   extension: string;
-  hasTextFile?: boolean;
 }
 
 export type optionsDocx = {

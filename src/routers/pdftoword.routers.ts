@@ -9,8 +9,11 @@ router.post("/api/upload-file/", PDF.uploadFile);
 // convert PDF to Word
 router.put("/api/convert-pdf-to-word/:pdfId", PDF.convertPDFToWord as any);
 
+// convert PDF to Word
+router.put("/api/convert-pdf-to-text/:pdfId", PDF.convertPDFToText as any);
+
 // convert PDF to PNG
-router.put("/api/convert-pdf-to-image/:pdfId", PDF.convertPDFToPNG as any);
+router.put("/api/convert-pdf-to-jpeg/:pdfId", PDF.convertPDFToPNG as any);
 
 // compress PDF
 router.put("/api/compress-pdf/:pdfId", PDF.compressPDF as any);

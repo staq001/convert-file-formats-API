@@ -8,7 +8,7 @@
   </head>
   <body>
     <header class="container">
-      <a><img src="images/logo" /></a>
+      <a class="logo"><img src="../images/logo_two.png" /></a>
       <ul class="header-links">
         <a class="browse-link">Convert PDF</a>
         <a class="browse-link">Convert DOCX</a>
@@ -40,11 +40,17 @@
     </p>
     <input type="file" id="fileInput" style="display: none" />
     <button class="upload" id="uploadFile">Select PDF file</button>
+    <button class="upload btn2" id="compress-pdf" style="display: none">
+      Compress PDF
+    </button>
+    <button class="upload btn3" id="download-pdf" style="display: none">
+      Download Compressed File
+    </button>
     <main></main>
     <footer class="compressed-foot">
       <p>© Staq 2025</p>
     </footer>
 
-    <script src="../app.js"></script>
+    <script src="../js/app.js"></script>
   </body>
 </html>

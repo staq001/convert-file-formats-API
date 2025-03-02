@@ -9,13 +9,14 @@ import * as poppler from "../../lib/poppler";
 import * as docx from "../../lib/docx";
 import Path from "node:path";
 import * as gs from "../../lib/ghostscript";
+import * as libreoffice from "../../lib/libreoffice";
 import { WordService } from "../services/word.services";
 
 const wordService = new WordService();
 const PDFtoWordService = new PDFToWordService();
 
 export async function uploadFile(req: Request, res: Response) {
-  const specifiedFileName = await req.headers.filename;
+  const specifiedFileName = req.headers.filename;
 
   const extension =
     typeof specifiedFileName === "string"
@@ -27,13 +28,12 @@ export async function uploadFile(req: Request, res: Response) {
       : "unspecified name";
 
   let id = crypto.randomBytes(4).toString("hex");
-  await util.checkPath("./storage");
 
   try {
     switch (extension) {
       case "pdf":
         const pdfId = id;
-        await fs.mkdir(`./storage/${pdfId}`);
+        await fs.mkdir(`./storage/${pdfId}`, { recursive: true });
         const fullPath = `./storage/${pdfId}/original.${extension}`;
         const file = await fs.open(fullPath, "w");
         const fileStream = file.createWriteStream();
@@ -47,7 +47,7 @@ export async function uploadFile(req: Request, res: Response) {
       case "docx":
         const docxId = id;
 
-        await fs.mkdir(`./storage/${docxId}`);
+        await fs.mkdir(`./storage/${docxId}`, { recursive: true });
         const originalPath = `./storage/${docxId}/original.${extension}`;
         const docxFile = await fs.open(originalPath, "w");
         const docxFileStream = docxFile.createWriteStream();
@@ -55,11 +55,14 @@ export async function uploadFile(req: Request, res: Response) {
         await pipeline(req, docxFileStream);
         docxFile.close();
         await wordService.uploadDocxFile({ extension, docxId, name });
+        break;
     }
 
     res.status(201).json({
       status: "success",
       message: "The file was successfully uploaded!",
+      id,
+      fileType: extension,
     });
   } catch (e) {
     console.log(e);
@@ -72,25 +75,7 @@ export async function uploadFile(req: Request, res: Response) {
   }
 }
 
-// export async function uploadFile(req: Request, res: Response) {
-//   const specifiedFileName = req.headers.filename;
-
-//   try {
-//     util.checkPath("./storage");
-
-//     const file = await fs.open(`./storage/${specifiedFileName}`, "w");
-//     const fileStream = file.createWriteStream();
-
-//     await pipeline(req, fileStream);
-//     file.close();
-//     res.status(200).send("Went well unoos");
-//   } catch (e) {
-//     console.log(e);
-//     res.status(494).json({ error: "A mistake occurred", e });
-//   }
-// }
-
-export async function convertPDFToWord(
+export async function convertPDFToText(
   req: Request<{ pdfId: string }>,
   res: Response
 ) {
@@ -115,25 +100,51 @@ export async function convertPDFToWord(
 
     await poppler.makeText(originalPath, textPath);
 
-    const targetWordPath = Path.join(
-      __dirname,
-      `./storage/${pdf.pdfId}/original.docx`
-    );
-    await docx.convertTextToDocx(textPath, targetWordPath);
-
     res.status(200).json({
       status: "success",
-      message: "Word document made successfully!",
+      message: ".txt file made successfully!",
     });
   } catch (e) {
     if (pdf) {
       await util.deleteFile(
         Path.join(__dirname, `./storage/${pdf.pdfId}/original.txt`)
       );
-      await util.deleteFile(
-        Path.join(__dirname, `./storage/${pdf.pdfId}/original.docx`)
-      );
     }
+    res.status(500).json({
+      status: "Failed",
+      message: `Operation Failed ${e}`,
+    });
+  }
+}
+
+export async function convertPDFToWord(
+  req: Request<{ pdfId: string }>,
+  res: Response
+) {
+  const { pdfId } = req.params;
+  const pdf = await PDFtoWordService.getPDF(pdfId);
+  console.log(pdf);
+
+  try {
+    if (!pdf) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "PDF file not found" });
+    }
+
+    const originalPath = Path.join(
+      __dirname,
+      `./storage/${pdf.pdfId}/original.${pdf.extension}`
+    );
+
+    await libreoffice.convertPDFToDocx(originalPath);
+
+    res.status(200).json({
+      status: "success",
+      message: "Word document made successfully!",
+    });
+  } catch (e) {
+    console.log(e);
     res.status(500).json({
       status: "Failed",
       message: `Operation Failed ${e}`,
@@ -205,14 +216,8 @@ export async function compressPDF(
         .json({ status: "failed", message: "PDF file not found" });
     }
 
-    const originalPath = Path.join(
-      __dirname,
-      `./storage/${pdf.pdfId}/original.${pdf.extension}`
-    );
-    const destination = Path.join(
-      __dirname,
-      `./storage/${pdf.pdfId}/original-compressed.pdf`
-    );
+    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
+    const destination = `./storage/${pdf.pdfId}/original-compressed.pdf`;
 
     await gs.compressPDF(originalPath, destination);
 
@@ -222,15 +227,8 @@ export async function compressPDF(
     });
   } catch (e) {
     if (pdf) {
-      await util.deleteFolder(
-        Path.join(__dirname, `./storage/${pdf.pdfId}/pdf-image-folder/`)
-      );
-      await util.deleteFile(
-        Path.join(
-          __dirname,
-          `./storage/${pdf.pdfId}/pdf-image-folder/original.png`
-        )
-      );
+      await util.deleteFolder(`./storage/${pdf.pdfId}/original-compressed.pdf`);
+      await util.deleteFile(`./storage/${pdf.pdfId}/original.${pdf.extension}`);
     }
     res.status(500).json({
       status: "Failed",

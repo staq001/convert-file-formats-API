@@ -24,7 +24,6 @@ export class WordService implements DocxService {
     // tell the db we have a text file for the just uploaded pdf file.
     this.db.update();
     const docx = this.db.docx.find((docx) => docx.docxId === docxId);
-    this.db.save();
     return docx;
   }
 }

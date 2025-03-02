@@ -24,10 +24,11 @@ h2 {
   text-align: center;
 }
 
-.logo {
-  height: 5.2rem;
+img {
+  height: 7.6rem;
+  width: 10rem;
   align-self: center;
-  margin-bottom: 4rem;
+  display: inline-flex;
 }
 
 .under-h2-paragraph {
@@ -55,7 +56,7 @@ h2 {
 }
 
 ul a {
-  margin-right: 3rem;
+  margin-right: 2.4rem;
   font-weight: 200;
   font-size: 1.3rem;
   cursor: pointer;
