@@ -36,10 +36,20 @@
     </header>
     <h2 class="compressed-h2">Convert DOCX to PDF</h2>
     <p class="under-h2-paragraph">Convert a DOCX file to a PDF file</p>
-    <button class="upload">Select DOCX file</button>
+
+    <input type="file" id="fileInput" style="display: none" />
+    <button class="upload" id="uploadFile">Select DOCX file</button>
+    <button class="upload btn2" id="convert-docx-to-pdf" style="display: none">
+      Convert Docx to PDF
+    </button>
+    <button class="upload btn3" id="download-pdf" style="display: none">
+      Download PDF File
+    </button>
     <main></main>
     <footer class="compressed-foot">
       <p>© Staq 2025</p>
     </footer>
+
+    <script src="../app.js"></script>
   </body>
 </html>

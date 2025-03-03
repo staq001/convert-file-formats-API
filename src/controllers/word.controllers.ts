@@ -1,8 +1,4 @@
 import { Request, Response } from "express";
-import path from "node:path";
-import crypto from "node:crypto";
-import fs from "node:fs/promises";
-import { pipeline } from "node:stream/promises";
 import { util } from "../../lib/util";
 import * as pandoc from "../../lib/pandoc";
 import * as libreoffice from "../../lib/libreoffice";
@@ -25,27 +21,20 @@ export async function convertDocxToHTML(
         message: "Docx file not found!",
       });
     }
-    const inputFilePath = Path.join(
-      __dirname,
-      `./storage/${docx.docxId}/original.${docx.extension}`
-    );
-    const outputFilePath = Path.join(
-      __dirname,
-      `./storage/${docx.docxId}/original.html`
-    );
+    console.log(docx);
+
+    const inputFilePath = `./storage/${docx.docxId}/original.${docx.extension}`;
+    const outputFilePath = `./storage/${docx.docxId}/original.html`;
 
     await pandoc.convertDocxToHTML(inputFilePath, outputFilePath);
+    res.status(200).json({
+      status: "success",
+      message: "Docx File converted to HTML successfully",
+    });
   } catch (e) {
+    console.log(e);
     if (docx) {
-      await util.deleteFile(
-        Path.join(
-          __dirname,
-          `./storage/${docx.docxId}/original.${docx.extension}`
-        )
-      );
-      await util.deleteFile(
-        Path.join(__dirname, `./storage/${docx.docxId}/original.html`)
-      );
+      await util.deleteFile(`./storage/${docx.docxId}/original.html`);
       res.status(500).json({
         status: "failed",
         message: "Operation failed!",
@@ -68,20 +57,16 @@ export async function convertDocxToPDF(
         message: "Docx file not found!",
       });
     }
-    const inputFilePath = Path.join(
-      __dirname,
-      `./storage/${docx.docxId}/original.${docx.extension}`
-    );
+    const inputFilePath = `./storage/${docx.docxId}/original.${docx.extension}`;
 
     await libreoffice.convertDocxToPDF(inputFilePath);
+    res.status(200).json({
+      status: "success",
+      message: "Docx File converted to PDF successfully",
+    });
   } catch (e) {
     if (docx) {
-      await util.deleteFile(
-        Path.join(
-          __dirname,
-          `./storage/${docx.docxId}/original.${docx.extension}`
-        )
-      );
+      await util.deleteFile(`./storage/${docx.docxId}/original.pdf}`);
       res.status(500).json({
         status: "failed",
         message: "Operation failed!",

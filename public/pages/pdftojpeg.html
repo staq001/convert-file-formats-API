@@ -34,14 +34,22 @@
         </a>
       </ul>
     </header>
-    <h2 class="compressed-h2">Convert PDF to JPEG</h2>
+    <h2 class="compressed-h2">Convert PDF to PNG</h2>
     <p class="under-h2-paragraph">
-      Convert each PDF page to a picture frame (JPEG)
+      Convert each PDF page to a picture frame (PNG)
     </p>
-    <button class="upload">Select PDF file</button>
+    <input type="file" id="fileInput" style="display: none" />
+    <button class="upload" id="uploadFile">Select PDF file</button>
+    <button class="upload btn2" id="convert-pdf-to-jpeg" style="display: none">
+      Convert PDF To JPEG
+    </button>
+    <button class="upload btn3" id="download-pdf" style="display: none">
+      Download
+    </button>
     <main></main>
     <footer class="compressed-foot">
       <p>© Staq 2025</p>
     </footer>
+    <script src="../app.js"></script>
   </body>
 </html>

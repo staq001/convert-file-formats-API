@@ -1,3 +1,4 @@
+/**VARIABLES */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,48 +35,277 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _a, _b;
+var _a, _b, _c, _d, _e;
 var _this = this;
-(_a = document.getElementById("uploadFile")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", function () {
+var uploadFileBtn = document.getElementById("uploadFile");
+var compressPDFBtn = document.getElementById("compress-pdf");
+var downloadPDFBtn = document.getElementById("download-pdf");
+var pdftoDocxBtn = document.getElementById("convert-pdf");
+var docxToHtmlBtn = document.getElementById("convert-docx-to-html");
+var pdfToJpegBtn = document.getElementById("convert-pdf-to-jpeg");
+var docxToPdfBtn = document.getElementById("convert-docx-to-pdf");
+/**FUNCTIONS */
+function toggleButton(button1, button2, value) {
+    button1.style.display = "none";
+    button2.style.display = "block";
+    if (value)
+        button2.setAttribute("appropos", value);
+}
+function fetchUrl(url_1, message_1, method_1, error_1) {
+    return __awaiter(this, arguments, void 0, function (url, message, method, error, body, headers) {
+        var response, e_1;
+        if (body === void 0) { body = undefined; }
+        if (headers === void 0) { headers = undefined; }
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, fetch(url, {
+                            method: method,
+                            headers: headers,
+                            body: body,
+                        })];
+                case 1:
+                    response = _a.sent();
+                    if (response.ok) {
+                        alert(message); // same
+                        return [2 /*return*/, response.json()];
+                    }
+                    else
+                        console.error(error);
+                    return [3 /*break*/, 3];
+                case 2:
+                    e_1 = _a.sent();
+                    console.error("An error occurred--", e_1);
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
+}
+uploadFileBtn.addEventListener("click", function () {
     var fileInput = document.getElementById("fileInput");
     fileInput.click();
 });
-(_b = document
-    .getElementById("fileInput")) === null || _b === void 0 ? void 0 : _b.addEventListener("change", function (event) { return __awaiter(_this, void 0, void 0, function () {
-    var target, file, fd, response, e_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                event.preventDefault();
-                target = event.target;
-                if (!target.files) return [3 /*break*/, 4];
-                file = target.files[0];
-                console.log("Selected file: ", file);
-                fd = new FormData();
-                fd.append("file", file);
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, fetch("/api/upload-file", {
-                        method: "POST",
-                        headers: {
-                            filename: file.name,
-                        },
-                        body: fd,
-                    })];
-            case 2:
-                response = _a.sent();
-                if (response.ok) {
-                    console.log("Upload was successful");
+switch (window.location.href.split("pages")[1].toString()) {
+    case "/compresspdf.html":
+        (_a = document
+            .getElementById("fileInput")) === null || _a === void 0 ? void 0 : _a.addEventListener("change", function (event) { return __awaiter(_this, void 0, void 0, function () {
+            var target, file, fd, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        event.preventDefault();
+                        target = event.target;
+                        if (!target.files) return [3 /*break*/, 2];
+                        file = target.files[0];
+                        fd = new FormData();
+                        fd.append("file", file);
+                        return [4 /*yield*/, fetchUrl("/api/upload-file", "File uploaded successfully!", "POST", "Upload failed!", fd, {
+                                filename: file.name,
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        toggleButton(uploadFileBtn, compressPDFBtn, response.id);
+                        console.log(response);
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
                 }
-                else
-                    console.log("Upload failed");
-                return [3 /*break*/, 4];
-            case 3:
-                e_1 = _a.sent();
-                console.error("Error during file upload:", e_1);
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
-        }
-    });
-}); });
+            });
+        }); });
+        compressPDFBtn.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
+            var attribute, response;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        attribute = compressPDFBtn.getAttribute("appropos");
+                        return [4 /*yield*/, fetchUrl("/api/compress-pdf/".concat(attribute), "PDF File compressed successfully", "PUT", "Compression Failed")];
+                    case 1:
+                        response = _b.sent();
+                        if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
+                            toggleButton(compressPDFBtn, downloadPDFBtn);
+                        }
+                        console.log(response);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        break;
+    case "/pdftodocx.html":
+        (_b = document
+            .getElementById("fileInput")) === null || _b === void 0 ? void 0 : _b.addEventListener("change", function (event) { return __awaiter(_this, void 0, void 0, function () {
+            var target, file, fd, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        event.preventDefault();
+                        target = event.target;
+                        if (!target.files) return [3 /*break*/, 2];
+                        file = target.files[0];
+                        fd = new FormData();
+                        fd.append("file", file);
+                        return [4 /*yield*/, fetchUrl("/api/upload-file", "File uploaded successfully!", "POST", "Upload failed!", fd, {
+                                filename: file.name,
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        toggleButton(uploadFileBtn, pdftoDocxBtn, response.id);
+                        console.log(response);
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        }); });
+        pdftoDocxBtn.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
+            var attribute, response;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        attribute = pdftoDocxBtn.getAttribute("appropos");
+                        return [4 /*yield*/, fetchUrl("/api/convert-pdf-to-word/".concat(attribute), "PDF File converted to Docx successfully", "PUT", "Conversion Failed")];
+                    case 1:
+                        response = _b.sent();
+                        if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
+                            toggleButton(pdftoDocxBtn, downloadPDFBtn);
+                        }
+                        console.log(response);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        break;
+    case "/docxtohtml.html":
+        (_c = document
+            .getElementById("fileInput")) === null || _c === void 0 ? void 0 : _c.addEventListener("change", function (event) { return __awaiter(_this, void 0, void 0, function () {
+            var target, file, fd, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        event.preventDefault();
+                        target = event.target;
+                        if (!target.files) return [3 /*break*/, 2];
+                        file = target.files[0];
+                        fd = new FormData();
+                        fd.append("file", file);
+                        return [4 /*yield*/, fetchUrl("/api/upload-file", "File uploaded successfully!", "POST", "Upload failed!", fd, {
+                                filename: file.name,
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        toggleButton(uploadFileBtn, docxToHtmlBtn, response.id);
+                        console.log(response);
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        }); });
+        docxToHtmlBtn.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
+            var attribute, response;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        attribute = docxToHtmlBtn.getAttribute("appropos");
+                        return [4 /*yield*/, fetchUrl("/api/convert-word-to-html/".concat(attribute), "Docx File converted to HTML successfully", "PUT", "Conversion Failed")];
+                    case 1:
+                        response = _b.sent();
+                        if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
+                            toggleButton(docxToHtmlBtn, downloadPDFBtn);
+                        }
+                        console.log(response);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        break;
+    case "/pdftojpeg.html":
+        (_d = document
+            .getElementById("fileInput")) === null || _d === void 0 ? void 0 : _d.addEventListener("change", function (event) { return __awaiter(_this, void 0, void 0, function () {
+            var target, file, fd, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        event.preventDefault();
+                        target = event.target;
+                        if (!target.files) return [3 /*break*/, 2];
+                        file = target.files[0];
+                        fd = new FormData();
+                        fd.append("file", file);
+                        return [4 /*yield*/, fetchUrl("/api/upload-file", "File uploaded successfully!", "POST", "Upload failed!", fd, {
+                                filename: file.name,
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        toggleButton(uploadFileBtn, pdfToJpegBtn, response.id);
+                        console.log(response);
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        }); });
+        pdfToJpegBtn.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
+            var attribute, response;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        attribute = pdfToJpegBtn.getAttribute("appropos");
+                        return [4 /*yield*/, fetchUrl("/api/convert-pdf-to-jpeg/".concat(attribute), "PDF File converted to JPEG successfully", "PUT", "Conversion Failed")];
+                    case 1:
+                        response = _b.sent();
+                        if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
+                            toggleButton(pdfToJpegBtn, downloadPDFBtn);
+                        }
+                        console.log(response);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        break;
+    case "/docxtopdf.html":
+        (_e = document
+            .getElementById("fileInput")) === null || _e === void 0 ? void 0 : _e.addEventListener("change", function (event) { return __awaiter(_this, void 0, void 0, function () {
+            var target, file, fd, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        event.preventDefault();
+                        target = event.target;
+                        if (!target.files) return [3 /*break*/, 2];
+                        file = target.files[0];
+                        fd = new FormData();
+                        fd.append("file", file);
+                        return [4 /*yield*/, fetchUrl("/api/upload-file", "File uploaded successfully!", "POST", "Upload failed!", fd, {
+                                filename: file.name,
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        toggleButton(uploadFileBtn, docxToPdfBtn, response.id);
+                        console.log(response);
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        }); });
+        docxToPdfBtn.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
+            var attribute, response;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        attribute = docxToPdfBtn.getAttribute("appropos");
+                        return [4 /*yield*/, fetchUrl("/api/convert-docx-to-pdf/".concat(attribute), "DOCX File converted to PDF successfully", "PUT", "Conversion Failed")];
+                    case 1:
+                        response = _b.sent();
+                        if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
+                            toggleButton(docxToPdfBtn, downloadPDFBtn);
+                        }
+                        console.log(response);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        break;
+}

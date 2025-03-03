@@ -65,7 +65,6 @@ export async function uploadFile(req: Request, res: Response) {
       fileType: extension,
     });
   } catch (e) {
-    console.log(e);
     // Delete the folder
     await util.deleteFolder(`./storage/${id}`);
     res.status(500).json({
@@ -123,7 +122,6 @@ export async function convertPDFToWord(
 ) {
   const { pdfId } = req.params;
   const pdf = await PDFtoWordService.getPDF(pdfId);
-  console.log(pdf);
 
   try {
     if (!pdf) {
@@ -131,11 +129,7 @@ export async function convertPDFToWord(
         .status(404)
         .json({ status: "failed", message: "PDF file not found" });
     }
-
-    const originalPath = Path.join(
-      __dirname,
-      `./storage/${pdf.pdfId}/original.${pdf.extension}`
-    );
+    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
 
     await libreoffice.convertPDFToDocx(originalPath);
 
@@ -144,7 +138,9 @@ export async function convertPDFToWord(
       message: "Word document made successfully!",
     });
   } catch (e) {
-    console.log(e);
+    if (pdf) {
+      await util.deleteFolder(`./storage/${pdf.pdfId}`);
+    }
     res.status(500).json({
       status: "Failed",
       message: `Operation Failed ${e}`,
@@ -166,17 +162,12 @@ export async function convertPDFToPNG(
         .json({ status: "failed", message: "PDF file not found" });
     }
 
-    await fs.mkdir(`./storage/${pdf.pdfId}/pdf-image-folder/`);
+    await fs.mkdir(`./storage/${pdf.pdfId}/pdf-image-folder/`, {
+      recursive: true,
+    });
 
-    const originalPath = Path.join(
-      __dirname,
-      `./storage/${pdf.pdfId}/original.${pdf.extension}`
-    );
-    const imagePath = Path.join(
-      __dirname,
-      `./storage/${pdf.pdfId}/pdf-image-folder/original.png`
-    );
-
+    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
+    const imagePath = `./storage/${pdf.pdfId}/pdf-image-folder/original.png`;
     await poppler.makeImage(originalPath, imagePath);
 
     res.status(200).json({
@@ -185,15 +176,7 @@ export async function convertPDFToPNG(
     });
   } catch (e) {
     if (pdf) {
-      await util.deleteFolder(
-        Path.join(__dirname, `./storage/${pdf.pdfId}/pdf-image-folder/`)
-      );
-      await util.deleteFile(
-        Path.join(
-          __dirname,
-          `./storage/${pdf.pdfId}/pdf-image-folder/original.png`
-        )
-      );
+      await util.deleteFolder(`./storage/${pdf.pdfId}/pdf-image-folder/`);
     }
     res.status(500).json({
       status: "Failed",

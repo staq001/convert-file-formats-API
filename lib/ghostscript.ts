@@ -1,5 +1,4 @@
 import { spawn } from "child_process";
-import { argv } from "process";
 export async function compressPDF(originalPath: string, destination: string) {
   return new Promise((resolve, reject) => {
     const ghostscript = spawn("gs", [
@@ -26,7 +25,3 @@ export async function compressPDF(originalPath: string, destination: string) {
     });
   });
 }
-
-// console.log(argv);
-
-compressPDF(argv[2], argv[3]);

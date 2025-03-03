@@ -3,13 +3,13 @@ import * as PDF from "../controllers/pdftoword.controllers";
 
 const router = Router();
 
-// upload PDF file.
+// upload file (docx/pdf).
 router.post("/api/upload-file/", PDF.uploadFile);
 
 // convert PDF to Word
 router.put("/api/convert-pdf-to-word/:pdfId", PDF.convertPDFToWord as any);
 
-// convert PDF to Word
+// convert PDF to .txt
 router.put("/api/convert-pdf-to-text/:pdfId", PDF.convertPDFToText as any);
 
 // convert PDF to PNG
