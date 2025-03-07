@@ -1,6 +1,8 @@
 /**VARIABLES */
 
 const uploadFileBtn = document.getElementById("uploadFile") as HTMLElement;
+const uploadFileBtn2 = document.getElementById("uploadFile2") as HTMLElement;
+const mergePDFBtn = document.getElementById("merge-pdf") as HTMLElement;
 const compressPDFBtn = document.getElementById("compress-pdf") as HTMLElement;
 const downloadPDFBtn = document.getElementById("download-pdf") as HTMLElement;
 const pdftoDocxBtn = document.getElementById("convert-pdf") as HTMLElement;
@@ -49,8 +51,21 @@ async function fetchUrl(
   }
 }
 
+let click = 0;
+
+uploadFileBtn2.addEventListener("click", () => {
+  const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+  click++;
+  console.log(click);
+
+  fileInput.click();
+  const attribute = uploadFileBtn.getAttribute("appropos") as string;
+  mergePDFBtn.setAttribute("second", attribute);
+});
+
 uploadFileBtn.addEventListener("click", () => {
   const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+  click++;
 
   fileInput.click();
 });
@@ -279,6 +294,57 @@ switch (window.location.href.split("pages")[1].toString()) {
 
       if (response?.status?.toLowerCase() === "success") {
         toggleButton(docxToPdfBtn, downloadPDFBtn);
+      }
+      console.log(response);
+    });
+    break;
+  case "/mergepdf.html":
+    document
+      .getElementById("fileInput")
+      ?.addEventListener("change", async (event) => {
+        event.preventDefault();
+        const target = event.target as HTMLInputElement;
+
+        if (target.files) {
+          const file = target.files[0];
+
+          const fd = new FormData();
+          fd.append("file", file);
+
+          const response = await fetchUrl(
+            "/api/upload-file",
+            "File uploaded successfully!",
+            "POST",
+            "Upload failed!",
+            fd,
+            {
+              filename: file.name,
+            }
+          );
+          toggleButton(uploadFileBtn, uploadFileBtn2, response.id);
+          if (click > 1) {
+            toggleButton(uploadFileBtn2, mergePDFBtn, response.id);
+          }
+
+          console.log(response);
+        }
+      });
+
+    mergePDFBtn.addEventListener("click", async () => {
+      const attribute = mergePDFBtn.getAttribute("appropos");
+      const secondAttribute = mergePDFBtn.getAttribute("second");
+
+      console.log(attribute, secondAttribute);
+
+      const response = await fetchUrl(
+        `/api/merge-pdf/${attribute}/${secondAttribute}`,
+        "PDF Files Merged Successfully!",
+        "PUT",
+        "Merge Failed"
+      );
+
+      if (response?.status?.toLowerCase() === "success") {
+        toggleButton(mergePDFBtn, downloadPDFBtn);
       }
       console.log(response);
     });

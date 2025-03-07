@@ -38,10 +38,21 @@
     <p class="under-h2-paragraph">
       Merge two distinct PDF files to form just one.
     </p>
-    <button class="upload">Select PDF file</button>
+
+    <input type="file" id="fileInput" style="display: none" />
+    <button class="upload" id="uploadFile">Select first PDF file</button>
+    <button class="upload" id="uploadFile2">Select second PDF file</button>
+    <button class="upload btn2" id="merge-pdf" style="display: none">
+      Merge PDF
+    </button>
+    <button class="upload btn3" id="download-pdf" style="display: none">
+      Download PDF File
+    </button>
     <main></main>
     <footer class="compressed-foot">
       <p>© Staq 2025</p>
     </footer>
+
+    <script src="../app.js"></script>
   </body>
 </html>

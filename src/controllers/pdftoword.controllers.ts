@@ -236,19 +236,10 @@ export async function mergePF(
         .json({ status: "failed", message: "PDF files not found" });
     }
 
-    const firstFilePath = Path.join(
-      __dirname,
-      `./storage/${first.pdfId}/original.${first.extension}`
-    );
-    const secondFilePath = Path.join(
-      __dirname,
-      `./storage/${second.pdfId}/original.${second.extension}`
-    );
+    const firstFilePath = `./storage/${first.pdfId}/original.${first.extension}`;
+    const secondFilePath = `./storage/${second.pdfId}/original.${second.extension}`;
 
-    const mergedFileDestination = Path.join(
-      __dirname,
-      `./storage/${first.pdfId}-${second.pdfId}/merged.pdf`
-    );
+    const mergedFileDestination = `./storage/${first.pdfId}-${second.pdfId}/merged.pdf`;
 
     await poppler.mergePDF(
       firstFilePath,
@@ -263,10 +254,7 @@ export async function mergePF(
   } catch (e) {
     if (first && second) {
       await util.deleteFile(
-        Path.join(
-          __dirname,
-          `./storage/${first.pdfId}-${second.pdfId}/merged.pdf/`
-        )
+        `./storage/${first.pdfId}-${second.pdfId}/merged.pdf/`
       );
     }
     res.status(500).json({
@@ -279,7 +267,7 @@ export async function mergePF(
 export async function getPDF(req: Request<{ pdfId: string }>, res: Response) {
   const { pdfId } = req.params;
 
-  const pdf = PDFtoWordService.getPDF(pdfId);
+  const pdf = await PDFtoWordService.getPDF(pdfId);
 
   try {
     if (!pdf) {

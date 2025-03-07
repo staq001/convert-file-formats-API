@@ -9,16 +9,13 @@ import { spawn } from "node:child_process";
 // Convert filename.pdf to plain text and preserve the layout:
 // pdftotext -layout filename.pdf
 
-export const makeText = async (
-  fullPath: string,
-  textPath: string
-): Promise<string | void> => {
+export const makeText = async (fullPath: string, textPath: string) => {
   return new Promise((resolve, reject) => {
     const poppler = spawn("pdftotext", ["-layout", fullPath, textPath]);
 
     poppler.on("close", (code) => {
       if (code === 0) {
-        resolve();
+        resolve(`Poppler exited with this code ${code}`);
       } else {
         reject(`Poppler exited with this code ${code}`);
       }
@@ -57,7 +54,11 @@ export const mergePDF = async (
   finalDestination: string
 ): Promise<string | void> => {
   return new Promise((resolve, reject) => {
-    const poppler = spawn("pdfunite", [inputFilePath, secondFilePath, finalDestination]);
+    const poppler = spawn("pdfunite", [
+      inputFilePath,
+      secondFilePath,
+      finalDestination,
+    ]);
 
     poppler.on("close", (code) => {
       if (code === 0) {
