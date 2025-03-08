@@ -8,7 +8,7 @@
   </head>
   <body>
     <header class="container">
-      <a><img src="images/logo" /></a>
+      <a><img src="../images/logo_two.png" /></a>
       <ul class="header-links">
         <a class="browse-link">Convert PDF</a>
         <a class="browse-link">Convert DOCX</a>
@@ -39,14 +39,20 @@
       Merge two distinct PDF files to form just one.
     </p>
 
-    <input type="file" id="fileInput" style="display: none" />
-    <button class="upload" id="uploadFile">Select first PDF file</button>
-    <button class="upload" id="uploadFile2">Select second PDF file</button>
+    <input
+      type="file"
+      id="fileInput"
+      names="files"
+      accept=".pdf"
+      multiple
+      style="display: none"
+    />
+    <button class="upload" id="uploadFile">Select multiple PDF files</button>
     <button class="upload btn2" id="merge-pdf" style="display: none">
       Merge PDF
     </button>
     <button class="upload btn3" id="download-pdf" style="display: none">
-      Download PDF File
+      Download PDF Files
     </button>
     <main></main>
     <footer class="compressed-foot">

@@ -73,3 +73,24 @@ export const mergePDF = async (
     });
   });
 };
+
+export const makeHTML = async (
+  inputFilePath: string,
+  secondFilePath: string
+): Promise<string | void> => {
+  return new Promise((resolve, reject) => {
+    const poppler = spawn("pdftohtml", [inputFilePath, secondFilePath]);
+
+    poppler.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(`Poppler exited with code ${code}`);
+      }
+    });
+
+    poppler.on("error", (err) => {
+      reject(err);
+    });
+  });
+};

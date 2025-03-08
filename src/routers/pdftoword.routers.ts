@@ -12,6 +12,9 @@ router.put("/api/convert-pdf-to-word/:pdfId", PDF.convertPDFToWord as any);
 // convert PDF to .txt
 router.put("/api/convert-pdf-to-text/:pdfId", PDF.convertPDFToText as any);
 
+// convert PDF to HTML
+router.put("/api/convert-pdf-to-html/:pdfId", PDF.convertPDFToHTML as any);
+
 // convert PDF to PNG
 router.put("/api/convert-pdf-to-jpeg/:pdfId", PDF.convertPDFToPNG as any);
 

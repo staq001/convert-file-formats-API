@@ -6,8 +6,6 @@ import { pipeline } from "node:stream/promises";
 import { util } from "../../lib/util";
 import { PDFToWordService } from "../services/pdftoword.services";
 import * as poppler from "../../lib/poppler";
-import * as docx from "../../lib/docx";
-import Path from "node:path";
 import * as gs from "../../lib/ghostscript";
 import * as libreoffice from "../../lib/libreoffice";
 import { WordService } from "../services/word.services";
@@ -88,26 +86,52 @@ export async function convertPDFToText(
         .json({ status: "failed", message: "PDF file not found" });
     }
 
-    const originalPath = Path.join(
-      __dirname,
-      `./storage/${pdf.pdfId}/original.${pdf.extension}`
-    );
-    const textPath = Path.join(
-      __dirname,
-      `./storage/${pdf.pdfId}/original.txt`
-    );
+    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
+    const textPath = `./storage/${pdf.pdfId}/original.txt`;
 
     await poppler.makeText(originalPath, textPath);
 
     res.status(200).json({
       status: "success",
-      message: ".txt file made successfully!",
+      message: ".TXT file made successfully!",
     });
   } catch (e) {
     if (pdf) {
-      await util.deleteFile(
-        Path.join(__dirname, `./storage/${pdf.pdfId}/original.txt`)
-      );
+      await util.deleteFile(`./storage/${pdf.pdfId}/original.txt`);
+    }
+    res.status(500).json({
+      status: "Failed",
+      message: `Operation Failed ${e}`,
+    });
+  }
+}
+export async function convertPDFToHTML(
+  req: Request<{ pdfId: string }>,
+  res: Response
+) {
+  const { pdfId } = req.params;
+  const pdf = await PDFtoWordService.getPDF(pdfId);
+
+  try {
+    if (!pdf) {
+      return res
+        .status(404)
+        .json({ status: "failed", message: "PDF file not found" });
+    }
+
+    await fs.mkdir(`./storage/${pdf.pdfId}/html/`, { recursive: true });
+
+    const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
+    const htmlPath = `./storage/${pdf.pdfId}/html/original.html`;
+
+    await poppler.makeHTML(originalPath, htmlPath);
+    res.status(200).json({
+      status: "success",
+      message: "HTML file made successfully!",
+    });
+  } catch (e) {
+    if (pdf) {
+      await util.deleteFile(`./storage/${pdf.pdfId}/original.txt`);
     }
     res.status(500).json({
       status: "Failed",
@@ -130,8 +154,9 @@ export async function convertPDFToWord(
         .json({ status: "failed", message: "PDF file not found" });
     }
     const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
+    const outputDirectory = `./storage/${pdf.pdfId}/`;
 
-    await libreoffice.convertPDFToDocx(originalPath);
+    await libreoffice.convertPDFToDocx(originalPath, outputDirectory);
 
     res.status(200).json({
       status: "success",
@@ -239,7 +264,10 @@ export async function mergePF(
     const firstFilePath = `./storage/${first.pdfId}/original.${first.extension}`;
     const secondFilePath = `./storage/${second.pdfId}/original.${second.extension}`;
 
-    const mergedFileDestination = `./storage/${first.pdfId}-${second.pdfId}/merged.pdf`;
+    await fs.mkdir(`./storage/${first.pdfId}-${second.pdfId}/`, {
+      recursive: true,
+    });
+    const mergedFileDestination = `./storage/${first.pdfId}-${second.pdfId}/${first.name}-${second.name}-merged.pdf`;
 
     await poppler.mergePDF(
       firstFilePath,
@@ -249,7 +277,7 @@ export async function mergePF(
 
     res.status(200).json({
       status: "Success",
-      message: "PDF file merged successfully!",
+      message: "PDF files merged successfully!",
     });
   } catch (e) {
     if (first && second) {

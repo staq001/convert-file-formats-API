@@ -1,7 +1,6 @@
 /**VARIABLES */
 
 const uploadFileBtn = document.getElementById("uploadFile") as HTMLElement;
-const uploadFileBtn2 = document.getElementById("uploadFile2") as HTMLElement;
 const mergePDFBtn = document.getElementById("merge-pdf") as HTMLElement;
 const compressPDFBtn = document.getElementById("compress-pdf") as HTMLElement;
 const downloadPDFBtn = document.getElementById("download-pdf") as HTMLElement;
@@ -15,6 +14,8 @@ const pdfToJpegBtn = document.getElementById(
 const docxToPdfBtn = document.getElementById(
   "convert-docx-to-pdf"
 ) as HTMLElement;
+const pdfToTxtBtn = document.getElementById("pdf-to-txt") as HTMLElement;
+const pdfToHtmlBtn = document.getElementById("pdf-to-html") as HTMLElement;
 
 /**FUNCTIONS */
 function toggleButton(
@@ -51,21 +52,8 @@ async function fetchUrl(
   }
 }
 
-let click = 0;
-
-uploadFileBtn2.addEventListener("click", () => {
-  const fileInput = document.getElementById("fileInput") as HTMLInputElement;
-  click++;
-  console.log(click);
-
-  fileInput.click();
-  const attribute = uploadFileBtn.getAttribute("appropos") as string;
-  mergePDFBtn.setAttribute("second", attribute);
-});
-
 uploadFileBtn.addEventListener("click", () => {
   const fileInput = document.getElementById("fileInput") as HTMLInputElement;
-  click++;
 
   fileInput.click();
 });
@@ -306,6 +294,61 @@ switch (window.location.href.split("pages")[1].toString()) {
         const target = event.target as HTMLInputElement;
 
         if (target.files) {
+          const files = target.files;
+
+          for (let i = 0; i < files.length; i++) {
+            const fd = new FormData();
+            fd.append("file", files[i]);
+
+            const response = await fetchUrl(
+              "/api/upload-file",
+              "File uploaded successfully!",
+              "POST",
+              "Upload failed!",
+              fd,
+              {
+                filename: files[i].name,
+              }
+            );
+            if (i === 0) {
+              mergePDFBtn.setAttribute("appropos", response.id);
+            } else {
+              mergePDFBtn.setAttribute("second", response.id);
+            }
+            toggleButton(uploadFileBtn, mergePDFBtn);
+
+            console.log(response);
+          }
+        }
+      });
+
+    mergePDFBtn.addEventListener("click", async () => {
+      const first = mergePDFBtn.getAttribute("second");
+      const second = mergePDFBtn.getAttribute("appropos");
+
+      console.log(first, second);
+
+      const response = await fetchUrl(
+        `/api/merge-pdfs/${first}/${second}`,
+        "PDF Files Merged Successfully!",
+        "PUT",
+        "Merge Failed"
+      );
+
+      if (response?.status?.toLowerCase() === "success") {
+        toggleButton(mergePDFBtn, downloadPDFBtn);
+      }
+      console.log(response);
+    });
+    break;
+  case "/pdftotext.html":
+    document
+      .getElementById("fileInput")
+      ?.addEventListener("change", async (event) => {
+        event.preventDefault();
+        const target = event.target as HTMLInputElement;
+
+        if (target.files) {
           const file = target.files[0];
 
           const fd = new FormData();
@@ -321,30 +364,69 @@ switch (window.location.href.split("pages")[1].toString()) {
               filename: file.name,
             }
           );
-          toggleButton(uploadFileBtn, uploadFileBtn2, response.id);
-          if (click > 1) {
-            toggleButton(uploadFileBtn2, mergePDFBtn, response.id);
-          }
+          toggleButton(uploadFileBtn, pdfToTxtBtn, response.id);
 
           console.log(response);
         }
       });
 
-    mergePDFBtn.addEventListener("click", async () => {
-      const attribute = mergePDFBtn.getAttribute("appropos");
-      const secondAttribute = mergePDFBtn.getAttribute("second");
-
-      console.log(attribute, secondAttribute);
+    pdfToTxtBtn.addEventListener("click", async () => {
+      const attribute = pdfToTxtBtn.getAttribute("appropos");
 
       const response = await fetchUrl(
-        `/api/merge-pdf/${attribute}/${secondAttribute}`,
-        "PDF Files Merged Successfully!",
+        `/api/convert-pdf-to-text/${attribute}`,
+        "PDF File converted to .TXT successfully",
         "PUT",
-        "Merge Failed"
+        "Conversion Failed"
       );
 
       if (response?.status?.toLowerCase() === "success") {
-        toggleButton(mergePDFBtn, downloadPDFBtn);
+        toggleButton(pdfToTxtBtn, downloadPDFBtn);
+      }
+      console.log(response);
+    });
+    break;
+  case "/pdftohtml.html":
+    document
+      .getElementById("fileInput")
+      ?.addEventListener("change", async (event) => {
+        event.preventDefault();
+        const target = event.target as HTMLInputElement;
+
+        if (target.files) {
+          const file = target.files[0];
+
+          const fd = new FormData();
+          fd.append("file", file);
+
+          const response = await fetchUrl(
+            "/api/upload-file",
+            "File uploaded successfully!",
+            "POST",
+            "Upload failed!",
+            fd,
+            {
+              filename: file.name,
+            }
+          );
+          toggleButton(uploadFileBtn, pdfToHtmlBtn, response.id);
+
+          console.log(response);
+        }
+      });
+
+    pdfToHtmlBtn.addEventListener("click", async () => {
+      const attribute = pdfToHtmlBtn.getAttribute("appropos");
+
+      const response = await fetchUrl(
+        `/api/convert-pdf-to-html/${attribute}`,
+        "PDF File converted to HTML successfully",
+        "PUT",
+        "Conversion Failed"
+      );
+
+      if (response?.status?.toLowerCase() === "success") {
+        toggleButton(pdfToHtmlBtn, downloadPDFBtn);
       }
       console.log(response);
     });

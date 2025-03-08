@@ -35,10 +35,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _a, _b, _c, _d, _e, _f;
+var _a, _b, _c, _d, _e, _f, _g, _h;
 var _this = this;
 var uploadFileBtn = document.getElementById("uploadFile");
-var uploadFileBtn2 = document.getElementById("uploadFile2");
 var mergePDFBtn = document.getElementById("merge-pdf");
 var compressPDFBtn = document.getElementById("compress-pdf");
 var downloadPDFBtn = document.getElementById("download-pdf");
@@ -46,6 +45,8 @@ var pdftoDocxBtn = document.getElementById("convert-pdf");
 var docxToHtmlBtn = document.getElementById("convert-docx-to-html");
 var pdfToJpegBtn = document.getElementById("convert-pdf-to-jpeg");
 var docxToPdfBtn = document.getElementById("convert-docx-to-pdf");
+var pdfToTxtBtn = document.getElementById("pdf-to-txt");
+var pdfToHtmlBtn = document.getElementById("pdf-to-html");
 /**FUNCTIONS */
 function toggleButton(button1, button2, value) {
     button1.style.display = "none";
@@ -85,18 +86,8 @@ function fetchUrl(url_1, message_1, method_1, error_1) {
         });
     });
 }
-var click = 0;
-uploadFileBtn2.addEventListener("click", function () {
-    var fileInput = document.getElementById("fileInput");
-    click++;
-    console.log(click);
-    fileInput.click();
-    var attribute = uploadFileBtn.getAttribute("appropos");
-    mergePDFBtn.setAttribute("second", attribute);
-});
 uploadFileBtn.addEventListener("click", function () {
     var fileInput = document.getElementById("fileInput");
-    click++;
     fileInput.click();
 });
 switch (window.location.href.split("pages")[1].toString()) {
@@ -323,6 +314,65 @@ switch (window.location.href.split("pages")[1].toString()) {
     case "/mergepdf.html":
         (_f = document
             .getElementById("fileInput")) === null || _f === void 0 ? void 0 : _f.addEventListener("change", function (event) { return __awaiter(_this, void 0, void 0, function () {
+            var target, files, i, fd, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        event.preventDefault();
+                        target = event.target;
+                        if (!target.files) return [3 /*break*/, 4];
+                        files = target.files;
+                        i = 0;
+                        _a.label = 1;
+                    case 1:
+                        if (!(i < files.length)) return [3 /*break*/, 4];
+                        fd = new FormData();
+                        fd.append("file", files[i]);
+                        return [4 /*yield*/, fetchUrl("/api/upload-file", "File uploaded successfully!", "POST", "Upload failed!", fd, {
+                                filename: files[i].name,
+                            })];
+                    case 2:
+                        response = _a.sent();
+                        if (i === 0) {
+                            mergePDFBtn.setAttribute("appropos", response.id);
+                        }
+                        else {
+                            mergePDFBtn.setAttribute("second", response.id);
+                        }
+                        toggleButton(uploadFileBtn, mergePDFBtn);
+                        console.log(response);
+                        _a.label = 3;
+                    case 3:
+                        i++;
+                        return [3 /*break*/, 1];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        }); });
+        mergePDFBtn.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
+            var first, second, response;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        first = mergePDFBtn.getAttribute("second");
+                        second = mergePDFBtn.getAttribute("appropos");
+                        console.log(first, second);
+                        return [4 /*yield*/, fetchUrl("/api/merge-pdfs/".concat(first, "/").concat(second), "PDF Files Merged Successfully!", "PUT", "Merge Failed")];
+                    case 1:
+                        response = _b.sent();
+                        if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
+                            toggleButton(mergePDFBtn, downloadPDFBtn);
+                        }
+                        console.log(response);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        break;
+    case "/pdftotext.html":
+        (_g = document
+            .getElementById("fileInput")) === null || _g === void 0 ? void 0 : _g.addEventListener("change", function (event) { return __awaiter(_this, void 0, void 0, function () {
             var target, file, fd, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -338,30 +388,69 @@ switch (window.location.href.split("pages")[1].toString()) {
                             })];
                     case 1:
                         response = _a.sent();
-                        toggleButton(uploadFileBtn, uploadFileBtn2, response.id);
-                        if (click > 1) {
-                            toggleButton(uploadFileBtn2, mergePDFBtn, response.id);
-                        }
+                        toggleButton(uploadFileBtn, pdfToTxtBtn, response.id);
                         console.log(response);
                         _a.label = 2;
                     case 2: return [2 /*return*/];
                 }
             });
         }); });
-        mergePDFBtn.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
-            var attribute, secondAttribute, response;
+        pdfToTxtBtn.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
+            var attribute, response;
             var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        attribute = mergePDFBtn.getAttribute("appropos");
-                        secondAttribute = mergePDFBtn.getAttribute("second");
-                        console.log(attribute, secondAttribute);
-                        return [4 /*yield*/, fetchUrl("/api/merge-pdf/".concat(attribute, "/").concat(secondAttribute), "PDF Files Merged Successfully!", "PUT", "Merge Failed")];
+                        attribute = pdfToTxtBtn.getAttribute("appropos");
+                        return [4 /*yield*/, fetchUrl("/api/convert-pdf-to-text/".concat(attribute), "PDF File converted to .TXT successfully", "PUT", "Conversion Failed")];
                     case 1:
                         response = _b.sent();
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
-                            toggleButton(mergePDFBtn, downloadPDFBtn);
+                            toggleButton(pdfToTxtBtn, downloadPDFBtn);
+                        }
+                        console.log(response);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
+        break;
+    case "/pdftohtml.html":
+        (_h = document
+            .getElementById("fileInput")) === null || _h === void 0 ? void 0 : _h.addEventListener("change", function (event) { return __awaiter(_this, void 0, void 0, function () {
+            var target, file, fd, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        event.preventDefault();
+                        target = event.target;
+                        if (!target.files) return [3 /*break*/, 2];
+                        file = target.files[0];
+                        fd = new FormData();
+                        fd.append("file", file);
+                        return [4 /*yield*/, fetchUrl("/api/upload-file", "File uploaded successfully!", "POST", "Upload failed!", fd, {
+                                filename: file.name,
+                            })];
+                    case 1:
+                        response = _a.sent();
+                        toggleButton(uploadFileBtn, pdfToHtmlBtn, response.id);
+                        console.log(response);
+                        _a.label = 2;
+                    case 2: return [2 /*return*/];
+                }
+            });
+        }); });
+        pdfToHtmlBtn.addEventListener("click", function () { return __awaiter(_this, void 0, void 0, function () {
+            var attribute, response;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        attribute = pdfToHtmlBtn.getAttribute("appropos");
+                        return [4 /*yield*/, fetchUrl("/api/convert-pdf-to-html/".concat(attribute), "PDF File converted to HTML successfully", "PUT", "Conversion Failed")];
+                    case 1:
+                        response = _b.sent();
+                        if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
+                            toggleButton(pdfToHtmlBtn, downloadPDFBtn);
                         }
                         console.log(response);
                         return [2 /*return*/];

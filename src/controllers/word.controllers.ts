@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
 import { util } from "../../lib/util";
-import * as pandoc from "../../lib/pandoc";
 import * as libreoffice from "../../lib/libreoffice";
-import * as docx from "../../lib/docx";
 import { WordService } from "../services/word.services";
-import Path from "node:path";
 const wordService = new WordService();
 
 export async function convertDocxToHTML(
@@ -24,15 +21,14 @@ export async function convertDocxToHTML(
     console.log(docx);
 
     const inputFilePath = `./storage/${docx.docxId}/original.${docx.extension}`;
-    const outputFilePath = `./storage/${docx.docxId}/original.html`;
+    const outputDirectory = `./storage/${docx.docxId}`;
 
-    await pandoc.convertDocxToHTML(inputFilePath, outputFilePath);
+    await libreoffice.convertDocxToHTML(inputFilePath, outputDirectory);
     res.status(200).json({
       status: "success",
       message: "Docx File converted to HTML successfully",
     });
   } catch (e) {
-    console.log(e);
     if (docx) {
       await util.deleteFile(`./storage/${docx.docxId}/original.html`);
       res.status(500).json({
@@ -58,8 +54,9 @@ export async function convertDocxToPDF(
       });
     }
     const inputFilePath = `./storage/${docx.docxId}/original.${docx.extension}`;
+    const outputDirectory = `./storage/${docx.docxId}`;
 
-    await libreoffice.convertDocxToPDF(inputFilePath);
+    await libreoffice.convertDocxToPDF(inputFilePath, outputDirectory);
     res.status(200).json({
       status: "success",
       message: "Docx File converted to PDF successfully",
