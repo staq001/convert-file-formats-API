@@ -148,7 +148,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _a.sent();
                         toggleButton(uploadFileBtn, compressPDFBtn, response.id);
-                        console.log(response);
                         _a.label = 2;
                     case 2: return [2 /*return*/];
                 }
@@ -195,7 +194,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _a.sent();
                         toggleButton(uploadFileBtn, pdftoDocxBtn, response.id);
-                        console.log(response);
                         _a.label = 2;
                     case 2: return [2 /*return*/];
                 }
@@ -214,7 +212,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
                             toggleButton(pdftoDocxBtn, downloadPDFBtn, attribute);
                         }
-                        console.log(response);
                         return [2 /*return*/];
                 }
             });
@@ -243,7 +240,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _a.sent();
                         toggleButton(uploadFileBtn, docxToHtmlBtn, response.id);
-                        console.log(response);
                         _a.label = 2;
                     case 2: return [2 /*return*/];
                 }
@@ -262,7 +258,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
                             toggleButton(docxToHtmlBtn, downloadPDFBtn, attribute);
                         }
-                        console.log(response);
                         return [2 /*return*/];
                 }
             });
@@ -291,7 +286,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _a.sent();
                         toggleButton(uploadFileBtn, pdfToJpegBtn, response.id);
-                        console.log(response);
                         _a.label = 2;
                     case 2: return [2 /*return*/];
                 }
@@ -310,7 +304,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
                             toggleButton(pdfToJpegBtn, downloadPDFBtn, attribute);
                         }
-                        console.log(response);
                         return [2 /*return*/];
                 }
             });
@@ -341,7 +334,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _a.sent();
                         toggleButton(uploadFileBtn, docxToPdfBtn, response.id);
-                        console.log(response);
                         _a.label = 2;
                     case 2: return [2 /*return*/];
                 }
@@ -360,7 +352,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
                             toggleButton(docxToPdfBtn, downloadPDFBtn);
                         }
-                        console.log(response);
                         return [2 /*return*/];
                 }
             });
@@ -395,7 +386,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                             mergePDFBtn.setAttribute("second", response.id);
                         }
                         toggleButton(uploadFileBtn, mergePDFBtn);
-                        console.log(response);
                         _a.label = 3;
                     case 3:
                         i++;
@@ -418,7 +408,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
                             toggleButton(mergePDFBtn, downloadPDFBtn, "".concat(first, "/").concat(second));
                         }
-                        console.log(response);
                         return [2 /*return*/];
                 }
             });
@@ -447,7 +436,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _a.sent();
                         toggleButton(uploadFileBtn, pdfToTxtBtn, response.id);
-                        console.log(response);
                         _a.label = 2;
                     case 2: return [2 /*return*/];
                 }
@@ -466,7 +454,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
                             toggleButton(pdfToTxtBtn, downloadPDFBtn, attribute);
                         }
-                        console.log(response);
                         return [2 /*return*/];
                 }
             });
@@ -495,7 +482,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _a.sent();
                         toggleButton(uploadFileBtn, pdfToHtmlBtn, response.id);
-                        console.log(response);
                         _a.label = 2;
                     case 2: return [2 /*return*/];
                 }
@@ -514,7 +500,6 @@ switch (window.location.href.split("pages")[1].toString()) {
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
                             toggleButton(pdfToHtmlBtn, downloadPDFBtn, attribute);
                         }
-                        console.log(response);
                         return [2 /*return*/];
                 }
             });

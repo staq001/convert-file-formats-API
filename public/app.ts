@@ -120,8 +120,6 @@ switch (window.location.href.split("pages")[1].toString()) {
             }
           );
           toggleButton(uploadFileBtn, compressPDFBtn, response.id);
-
-          console.log(response);
         }
       });
 
@@ -169,8 +167,6 @@ switch (window.location.href.split("pages")[1].toString()) {
             }
           );
           toggleButton(uploadFileBtn, pdftoDocxBtn, response.id);
-
-          console.log(response);
         }
       });
 
@@ -187,7 +183,6 @@ switch (window.location.href.split("pages")[1].toString()) {
       if (response?.status?.toLowerCase() === "success") {
         toggleButton(pdftoDocxBtn, downloadPDFBtn, attribute);
       }
-      console.log(response);
     });
     // downloadPDFBtn.addEventListener("click", () => {
     //   const attribute = downloadPDFBtn.getAttribute("appropos") as string;
@@ -219,8 +214,6 @@ switch (window.location.href.split("pages")[1].toString()) {
             }
           );
           toggleButton(uploadFileBtn, docxToHtmlBtn, response.id);
-
-          console.log(response);
         }
       });
 
@@ -237,7 +230,6 @@ switch (window.location.href.split("pages")[1].toString()) {
       if (response?.status?.toLowerCase() === "success") {
         toggleButton(docxToHtmlBtn, downloadPDFBtn, attribute as string);
       }
-      console.log(response);
     });
     // downloadPDFBtn.addEventListener("click", () => {
     //   const attribute = downloadPDFBtn.getAttribute("appropos") as string;
@@ -268,8 +260,6 @@ switch (window.location.href.split("pages")[1].toString()) {
             }
           );
           toggleButton(uploadFileBtn, pdfToJpegBtn, response.id);
-
-          console.log(response);
         }
       });
 
@@ -286,7 +276,6 @@ switch (window.location.href.split("pages")[1].toString()) {
       if (response?.status?.toLowerCase() === "success") {
         toggleButton(pdfToJpegBtn, downloadPDFBtn, attribute);
       }
-      console.log(response);
     });
     downloadPDFBtn.addEventListener("click", () => {
       const attribute = downloadPDFBtn.getAttribute("appropos") as string;
@@ -319,8 +308,6 @@ switch (window.location.href.split("pages")[1].toString()) {
             }
           );
           toggleButton(uploadFileBtn, docxToPdfBtn, response.id);
-
-          console.log(response);
         }
       });
 
@@ -337,7 +324,6 @@ switch (window.location.href.split("pages")[1].toString()) {
       if (response?.status?.toLowerCase() === "success") {
         toggleButton(docxToPdfBtn, downloadPDFBtn);
       }
-      console.log(response);
     });
     break;
   case "/mergepdf.html":
@@ -370,8 +356,6 @@ switch (window.location.href.split("pages")[1].toString()) {
               mergePDFBtn.setAttribute("second", response.id);
             }
             toggleButton(uploadFileBtn, mergePDFBtn);
-
-            console.log(response);
           }
         }
       });
@@ -390,7 +374,6 @@ switch (window.location.href.split("pages")[1].toString()) {
       if (response?.status?.toLowerCase() === "success") {
         toggleButton(mergePDFBtn, downloadPDFBtn, `${first}/${second}`);
       }
-      console.log(response);
     });
 
     downloadPDFBtn.addEventListener("click", () => {
@@ -422,8 +405,6 @@ switch (window.location.href.split("pages")[1].toString()) {
             }
           );
           toggleButton(uploadFileBtn, pdfToTxtBtn, response.id);
-
-          console.log(response);
         }
       });
 
@@ -440,7 +421,6 @@ switch (window.location.href.split("pages")[1].toString()) {
       if (response?.status?.toLowerCase() === "success") {
         toggleButton(pdfToTxtBtn, downloadPDFBtn, attribute);
       }
-      console.log(response);
     });
     downloadPDFBtn.addEventListener("click", () => {
       const attribute = downloadPDFBtn.getAttribute("appropos") as string;
@@ -472,8 +452,6 @@ switch (window.location.href.split("pages")[1].toString()) {
             }
           );
           toggleButton(uploadFileBtn, pdfToHtmlBtn, response.id);
-
-          console.log(response);
         }
       });
 
@@ -490,7 +468,6 @@ switch (window.location.href.split("pages")[1].toString()) {
       if (response?.status?.toLowerCase() === "success") {
         toggleButton(pdfToHtmlBtn, downloadPDFBtn, attribute);
       }
-      console.log(response);
     });
 
     downloadPDFBtn.addEventListener("click", () => {
