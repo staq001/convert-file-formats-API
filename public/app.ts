@@ -1,21 +1,31 @@
 /**VARIABLES */
 
-const uploadFileBtn = document.getElementById("uploadFile") as HTMLElement;
-const mergePDFBtn = document.getElementById("merge-pdf") as HTMLElement;
-const compressPDFBtn = document.getElementById("compress-pdf") as HTMLElement;
-const downloadPDFBtn = document.getElementById("download-pdf") as HTMLElement;
-const pdftoDocxBtn = document.getElementById("convert-pdf") as HTMLElement;
+const uploadFileBtn = document.getElementById(
+  "uploadFile"
+) as HTMLButtonElement;
+const mergePDFBtn = document.getElementById("merge-pdf") as HTMLButtonElement;
+const compressPDFBtn = document.getElementById(
+  "compress-pdf"
+) as HTMLButtonElement;
+const downloadPDFBtn = document.getElementById(
+  "download-pdf"
+) as HTMLButtonElement;
+const pdftoDocxBtn = document.getElementById(
+  "convert-pdf"
+) as HTMLButtonElement;
 const docxToHtmlBtn = document.getElementById(
   "convert-docx-to-html"
-) as HTMLElement;
+) as HTMLButtonElement;
 const pdfToJpegBtn = document.getElementById(
   "convert-pdf-to-jpeg"
-) as HTMLElement;
+) as HTMLButtonElement;
 const docxToPdfBtn = document.getElementById(
   "convert-docx-to-pdf"
-) as HTMLElement;
-const pdfToTxtBtn = document.getElementById("pdf-to-txt") as HTMLElement;
-const pdfToHtmlBtn = document.getElementById("pdf-to-html") as HTMLElement;
+) as HTMLButtonElement;
+const pdfToTxtBtn = document.getElementById("pdf-to-txt") as HTMLButtonElement;
+const pdfToHtmlBtn = document.getElementById(
+  "pdf-to-html"
+) as HTMLButtonElement;
 
 /**FUNCTIONS */
 function toggleButton(
@@ -124,6 +134,9 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     compressPDFBtn.addEventListener("click", async () => {
+      compressPDFBtn.disabled = true;
+      compressPDFBtn.innerHTML = "Compressing...";
+
       const attribute = compressPDFBtn.getAttribute("appropos") as string;
 
       const response = await fetchUrl(
@@ -171,6 +184,8 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     pdftoDocxBtn.addEventListener("click", async () => {
+      pdftoDocxBtn.disabled = true;
+      pdftoDocxBtn.innerHTML = "Converting...";
       const attribute = pdftoDocxBtn.getAttribute("appropos") as string;
 
       const response = await fetchUrl(
@@ -264,6 +279,8 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     pdfToJpegBtn.addEventListener("click", async () => {
+      pdfToJpegBtn.disabled = true;
+      pdfToJpegBtn.innerHTML = "Converting...";
       const attribute = pdfToJpegBtn.getAttribute("appropos") as string;
 
       const response = await fetchUrl(
@@ -361,6 +378,9 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     mergePDFBtn.addEventListener("click", async () => {
+      mergePDFBtn.disabled = true;
+      mergePDFBtn.innerHTML = "Merging...";
+
       const first = mergePDFBtn.getAttribute("appropos");
       const second = mergePDFBtn.getAttribute("second");
 
@@ -409,6 +429,9 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     pdfToTxtBtn.addEventListener("click", async () => {
+      pdfToTxtBtn.disabled = true;
+      pdfToTxtBtn.innerHTML = "Converting...";
+
       const attribute = pdfToTxtBtn.getAttribute("appropos") as string;
 
       const response = await fetchUrl(
@@ -456,6 +479,8 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     pdfToHtmlBtn.addEventListener("click", async () => {
+      pdfToHtmlBtn.disabled = true;
+      pdfToHtmlBtn.innerHTML = "Converting...";
       const attribute = pdfToHtmlBtn.getAttribute("appropos") as string;
 
       const response = await fetchUrl(

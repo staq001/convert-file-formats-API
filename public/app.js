@@ -159,6 +159,8 @@ switch (window.location.href.split("pages")[1].toString()) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        compressPDFBtn.disabled = true;
+                        compressPDFBtn.innerHTML = "Compressing...";
                         attribute = compressPDFBtn.getAttribute("appropos");
                         return [4 /*yield*/, fetchUrl("/api/compress-pdf/".concat(attribute), "PDF File compressed successfully", "PUT", "Compression Failed")];
                     case 1:
@@ -205,6 +207,8 @@ switch (window.location.href.split("pages")[1].toString()) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        pdftoDocxBtn.disabled = true;
+                        pdftoDocxBtn.innerHTML = "Converting...";
                         attribute = pdftoDocxBtn.getAttribute("appropos");
                         return [4 /*yield*/, fetchUrl("/api/convert-pdf-to-word/".concat(attribute), "PDF File converted to Docx successfully", "PUT", "Conversion Failed")];
                     case 1:
@@ -297,6 +301,8 @@ switch (window.location.href.split("pages")[1].toString()) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        pdfToJpegBtn.disabled = true;
+                        pdfToJpegBtn.innerHTML = "Converting...";
                         attribute = pdfToJpegBtn.getAttribute("appropos");
                         return [4 /*yield*/, fetchUrl("/api/convert-pdf-to-jpeg/".concat(attribute), "PDF File converted to JPEG successfully", "PUT", "Conversion Failed")];
                     case 1:
@@ -400,6 +406,8 @@ switch (window.location.href.split("pages")[1].toString()) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        mergePDFBtn.disabled = true;
+                        mergePDFBtn.innerHTML = "Merging...";
                         first = mergePDFBtn.getAttribute("appropos");
                         second = mergePDFBtn.getAttribute("second");
                         return [4 /*yield*/, fetchUrl("/api/merge-pdfs/".concat(first, "/").concat(second), "PDF Files Merged Successfully!", "PUT", "Merge Failed")];
@@ -447,6 +455,8 @@ switch (window.location.href.split("pages")[1].toString()) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        pdfToTxtBtn.disabled = true;
+                        pdfToTxtBtn.innerHTML = "Converting...";
                         attribute = pdfToTxtBtn.getAttribute("appropos");
                         return [4 /*yield*/, fetchUrl("/api/convert-pdf-to-text/".concat(attribute), "PDF File converted to .TXT successfully", "PUT", "Conversion Failed")];
                     case 1:
@@ -493,6 +503,8 @@ switch (window.location.href.split("pages")[1].toString()) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
+                        pdfToHtmlBtn.disabled = true;
+                        pdfToHtmlBtn.innerHTML = "Converting...";
                         attribute = pdfToHtmlBtn.getAttribute("appropos");
                         return [4 /*yield*/, fetchUrl("/api/convert-pdf-to-html/".concat(attribute), "PDF File converted to HTML successfully", "PUT", "Conversion Failed")];
                     case 1:

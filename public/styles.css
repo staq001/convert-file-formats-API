@@ -11,7 +11,7 @@ html {
 
 body {
   /* background-color: #edecec1f; */
-  font-family: sans-serif;
+  font-family: "Noto Sans", "sans-serif";
 }
 
 h2 {
@@ -57,7 +57,7 @@ img {
 
 ul a {
   margin-right: 2.4rem;
-  font-weight: 200;
+  font-weight: 400;
   font-size: 1.3rem;
   cursor: pointer;
 }
@@ -84,6 +84,7 @@ main a {
   border-radius: 5px;
   box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
   font-family: inherit;
+  font-weight: 400;
 
   padding: 2rem;
   cursor: pointer;
@@ -91,11 +92,24 @@ main a {
   color: #000;
 }
 
-/* main a:link,
-main a:visited {
-  color: #ccc;
-  transition: all 0.2s;
-} */
+main a {
+  position: relative;
+  display: inline-block;
+}
+
+a.coming-soon::before {
+  content: "Coming Soon";
+  position: absolute;
+  top: -5px;
+  left: -25px;
+  background-color: red;
+  color: white;
+  padding: 5px 10px;
+  font-weight: bold;
+  font-size: 10px;
+  transform: rotate(-45deg);
+  z-index: 1;
+}
 
 main a p {
   margin-bottom: 2.4rem;
@@ -106,7 +120,7 @@ main a p {
 }
 
 main a span {
-  font-weight: 100;
+  font-weight: 300;
   font-size: 1.5rem;
   color: #666363;
 }
