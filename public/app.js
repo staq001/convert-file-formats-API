@@ -90,6 +90,44 @@ uploadFileBtn.addEventListener("click", function () {
     var fileInput = document.getElementById("fileInput");
     fileInput.click();
 });
+function downloadFile(attribute, fileType, operation, headers) {
+    return __awaiter(this, void 0, void 0, function () {
+        var response, customFileName, blob, url, link, e_2;
+        var _a, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _c.trys.push([0, 3, , 4]);
+                    return [4 /*yield*/, fetch("/api/download-file/".concat(attribute, "/").concat(operation), {
+                            method: "GET",
+                            headers: headers,
+                        })];
+                case 1:
+                    response = _c.sent();
+                    customFileName = ((_b = (_a = response.headers
+                        .get("Content-Disposition")) === null || _a === void 0 ? void 0 : _a.match(/filename="(.+)"/)) === null || _b === void 0 ? void 0 : _b[1]) || "download.".concat(fileType);
+                    if (!response.ok) {
+                        throw new Error("File Download failed!");
+                    }
+                    return [4 /*yield*/, response.blob()];
+                case 2:
+                    blob = _c.sent();
+                    url = window.URL.createObjectURL(blob);
+                    link = document.createElement("a");
+                    link.href = url;
+                    link.download = customFileName;
+                    link.click();
+                    window.URL.revokeObjectURL(url);
+                    return [3 /*break*/, 4];
+                case 3:
+                    e_2 = _c.sent();
+                    console.error("An error occurred--", e_2);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
+}
 switch (window.location.href.split("pages")[1].toString()) {
     case "/compresspdf.html":
         (_a = document
@@ -127,13 +165,16 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _b.sent();
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
-                            toggleButton(compressPDFBtn, downloadPDFBtn);
+                            toggleButton(compressPDFBtn, downloadPDFBtn, attribute);
                         }
-                        console.log(response);
                         return [2 /*return*/];
                 }
             });
         }); });
+        downloadPDFBtn.addEventListener("click", function () {
+            var attribute = downloadPDFBtn.getAttribute("appropos");
+            downloadFile(attribute, "pdf", "compress");
+        });
         break;
     case "/pdftodocx.html":
         (_b = document
@@ -171,13 +212,17 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _b.sent();
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
-                            toggleButton(pdftoDocxBtn, downloadPDFBtn);
+                            toggleButton(pdftoDocxBtn, downloadPDFBtn, attribute);
                         }
                         console.log(response);
                         return [2 /*return*/];
                 }
             });
         }); });
+        // downloadPDFBtn.addEventListener("click", () => {
+        //   const attribute = downloadPDFBtn.getAttribute("appropos") as string;
+        //   downloadFile(attribute, "docx");
+        // });
         break;
     case "/docxtohtml.html":
         (_c = document
@@ -215,13 +260,17 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _b.sent();
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
-                            toggleButton(docxToHtmlBtn, downloadPDFBtn);
+                            toggleButton(docxToHtmlBtn, downloadPDFBtn, attribute);
                         }
                         console.log(response);
                         return [2 /*return*/];
                 }
             });
         }); });
+        // downloadPDFBtn.addEventListener("click", () => {
+        //   const attribute = downloadPDFBtn.getAttribute("appropos") as string;
+        //   downloadFile(attribute, "html");
+        // });
         break;
     case "/pdftojpeg.html":
         (_d = document
@@ -259,13 +308,19 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _b.sent();
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
-                            toggleButton(pdfToJpegBtn, downloadPDFBtn);
+                            toggleButton(pdfToJpegBtn, downloadPDFBtn, attribute);
                         }
                         console.log(response);
                         return [2 /*return*/];
                 }
             });
         }); });
+        downloadPDFBtn.addEventListener("click", function () {
+            var attribute = downloadPDFBtn.getAttribute("appropos");
+            downloadFile(attribute, "zip", "jpeg", {
+                "Content-Type": "application/zip",
+            });
+        });
         break;
     case "/docxtopdf.html":
         (_e = document
@@ -355,20 +410,23 @@ switch (window.location.href.split("pages")[1].toString()) {
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        first = mergePDFBtn.getAttribute("second");
-                        second = mergePDFBtn.getAttribute("appropos");
-                        console.log(first, second);
+                        first = mergePDFBtn.getAttribute("appropos");
+                        second = mergePDFBtn.getAttribute("second");
                         return [4 /*yield*/, fetchUrl("/api/merge-pdfs/".concat(first, "/").concat(second), "PDF Files Merged Successfully!", "PUT", "Merge Failed")];
                     case 1:
                         response = _b.sent();
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
-                            toggleButton(mergePDFBtn, downloadPDFBtn);
+                            toggleButton(mergePDFBtn, downloadPDFBtn, "".concat(first, "/").concat(second));
                         }
                         console.log(response);
                         return [2 /*return*/];
                 }
             });
         }); });
+        downloadPDFBtn.addEventListener("click", function () {
+            var attribute = downloadPDFBtn.getAttribute("appropos");
+            downloadFile(attribute, "pdf", "pdf");
+        });
         break;
     case "/pdftotext.html":
         (_g = document
@@ -406,13 +464,17 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _b.sent();
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
-                            toggleButton(pdfToTxtBtn, downloadPDFBtn);
+                            toggleButton(pdfToTxtBtn, downloadPDFBtn, attribute);
                         }
                         console.log(response);
                         return [2 /*return*/];
                 }
             });
         }); });
+        downloadPDFBtn.addEventListener("click", function () {
+            var attribute = downloadPDFBtn.getAttribute("appropos");
+            downloadFile(attribute, "txt", "txt");
+        });
         break;
     case "/pdftohtml.html":
         (_h = document
@@ -450,12 +512,18 @@ switch (window.location.href.split("pages")[1].toString()) {
                     case 1:
                         response = _b.sent();
                         if (((_a = response === null || response === void 0 ? void 0 : response.status) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "success") {
-                            toggleButton(pdfToHtmlBtn, downloadPDFBtn);
+                            toggleButton(pdfToHtmlBtn, downloadPDFBtn, attribute);
                         }
                         console.log(response);
                         return [2 /*return*/];
                 }
             });
         }); });
+        downloadPDFBtn.addEventListener("click", function () {
+            var attribute = downloadPDFBtn.getAttribute("appropos");
+            downloadFile(attribute, "zip", "html", {
+                "Content-Type": "application/zip",
+            });
+        });
         break;
 }

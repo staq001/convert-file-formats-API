@@ -18,7 +18,6 @@ export async function convertDocxToHTML(
         message: "Docx file not found!",
       });
     }
-    console.log(docx);
 
     const inputFilePath = `./storage/${docx.docxId}/original.${docx.extension}`;
     const outputDirectory = `./storage/${docx.docxId}`;
@@ -29,6 +28,7 @@ export async function convertDocxToHTML(
       message: "Docx File converted to HTML successfully",
     });
   } catch (e) {
+    console.log(e);
     if (docx) {
       await util.deleteFile(`./storage/${docx.docxId}/original.html`);
       res.status(500).json({

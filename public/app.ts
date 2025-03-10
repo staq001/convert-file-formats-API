@@ -58,6 +58,43 @@ uploadFileBtn.addEventListener("click", () => {
   fileInput.click();
 });
 
+async function downloadFile(
+  attribute: string,
+  fileType: string,
+  operation?: string,
+  headers?: any
+) {
+  try {
+    const response = await fetch(
+      `/api/download-file/${attribute}/${operation}`,
+      {
+        method: "GET",
+        headers,
+      }
+    );
+
+    const customFileName =
+      response.headers
+        .get("Content-Disposition")
+        ?.match(/filename="(.+)"/)?.[1] || `download.${fileType}`;
+
+    if (!response.ok) {
+      throw new Error("File Download failed!");
+    }
+    const blob = await response.blob();
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = customFileName;
+    link.click();
+
+    window.URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error("An error occurred--", e);
+  }
+}
+
 switch (window.location.href.split("pages")[1].toString()) {
   case "/compresspdf.html":
     document
@@ -89,7 +126,7 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     compressPDFBtn.addEventListener("click", async () => {
-      const attribute = compressPDFBtn.getAttribute("appropos");
+      const attribute = compressPDFBtn.getAttribute("appropos") as string;
 
       const response = await fetchUrl(
         `/api/compress-pdf/${attribute}`,
@@ -99,9 +136,12 @@ switch (window.location.href.split("pages")[1].toString()) {
       );
 
       if (response?.status?.toLowerCase() === "success") {
-        toggleButton(compressPDFBtn, downloadPDFBtn);
+        toggleButton(compressPDFBtn, downloadPDFBtn, attribute);
       }
-      console.log(response);
+    });
+    downloadPDFBtn.addEventListener("click", () => {
+      const attribute = downloadPDFBtn.getAttribute("appropos") as string;
+      downloadFile(attribute, "pdf", "compress");
     });
     break;
 
@@ -135,7 +175,7 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     pdftoDocxBtn.addEventListener("click", async () => {
-      const attribute = pdftoDocxBtn.getAttribute("appropos");
+      const attribute = pdftoDocxBtn.getAttribute("appropos") as string;
 
       const response = await fetchUrl(
         `/api/convert-pdf-to-word/${attribute}`,
@@ -145,10 +185,14 @@ switch (window.location.href.split("pages")[1].toString()) {
       );
 
       if (response?.status?.toLowerCase() === "success") {
-        toggleButton(pdftoDocxBtn, downloadPDFBtn);
+        toggleButton(pdftoDocxBtn, downloadPDFBtn, attribute);
       }
       console.log(response);
     });
+    // downloadPDFBtn.addEventListener("click", () => {
+    //   const attribute = downloadPDFBtn.getAttribute("appropos") as string;
+    //   downloadFile(attribute, "docx");
+    // });
     break;
 
   case "/docxtohtml.html":
@@ -191,10 +235,14 @@ switch (window.location.href.split("pages")[1].toString()) {
       );
 
       if (response?.status?.toLowerCase() === "success") {
-        toggleButton(docxToHtmlBtn, downloadPDFBtn);
+        toggleButton(docxToHtmlBtn, downloadPDFBtn, attribute as string);
       }
       console.log(response);
     });
+    // downloadPDFBtn.addEventListener("click", () => {
+    //   const attribute = downloadPDFBtn.getAttribute("appropos") as string;
+    //   downloadFile(attribute, "html");
+    // });
     break;
   case "/pdftojpeg.html":
     document
@@ -226,7 +274,7 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     pdfToJpegBtn.addEventListener("click", async () => {
-      const attribute = pdfToJpegBtn.getAttribute("appropos");
+      const attribute = pdfToJpegBtn.getAttribute("appropos") as string;
 
       const response = await fetchUrl(
         `/api/convert-pdf-to-jpeg/${attribute}`,
@@ -236,9 +284,15 @@ switch (window.location.href.split("pages")[1].toString()) {
       );
 
       if (response?.status?.toLowerCase() === "success") {
-        toggleButton(pdfToJpegBtn, downloadPDFBtn);
+        toggleButton(pdfToJpegBtn, downloadPDFBtn, attribute);
       }
       console.log(response);
+    });
+    downloadPDFBtn.addEventListener("click", () => {
+      const attribute = downloadPDFBtn.getAttribute("appropos") as string;
+      downloadFile(attribute, "zip", "jpeg", {
+        "Content-Type": "application/zip",
+      });
     });
     break;
   case "/docxtopdf.html":
@@ -323,10 +377,8 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     mergePDFBtn.addEventListener("click", async () => {
-      const first = mergePDFBtn.getAttribute("second");
-      const second = mergePDFBtn.getAttribute("appropos");
-
-      console.log(first, second);
+      const first = mergePDFBtn.getAttribute("appropos");
+      const second = mergePDFBtn.getAttribute("second");
 
       const response = await fetchUrl(
         `/api/merge-pdfs/${first}/${second}`,
@@ -336,9 +388,14 @@ switch (window.location.href.split("pages")[1].toString()) {
       );
 
       if (response?.status?.toLowerCase() === "success") {
-        toggleButton(mergePDFBtn, downloadPDFBtn);
+        toggleButton(mergePDFBtn, downloadPDFBtn, `${first}/${second}`);
       }
       console.log(response);
+    });
+
+    downloadPDFBtn.addEventListener("click", () => {
+      const attribute = downloadPDFBtn.getAttribute("appropos") as string;
+      downloadFile(attribute, "pdf", "pdf");
     });
     break;
   case "/pdftotext.html":
@@ -371,7 +428,7 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     pdfToTxtBtn.addEventListener("click", async () => {
-      const attribute = pdfToTxtBtn.getAttribute("appropos");
+      const attribute = pdfToTxtBtn.getAttribute("appropos") as string;
 
       const response = await fetchUrl(
         `/api/convert-pdf-to-text/${attribute}`,
@@ -381,11 +438,16 @@ switch (window.location.href.split("pages")[1].toString()) {
       );
 
       if (response?.status?.toLowerCase() === "success") {
-        toggleButton(pdfToTxtBtn, downloadPDFBtn);
+        toggleButton(pdfToTxtBtn, downloadPDFBtn, attribute);
       }
       console.log(response);
     });
+    downloadPDFBtn.addEventListener("click", () => {
+      const attribute = downloadPDFBtn.getAttribute("appropos") as string;
+      downloadFile(attribute, "txt", "txt");
+    });
     break;
+
   case "/pdftohtml.html":
     document
       .getElementById("fileInput")
@@ -416,7 +478,7 @@ switch (window.location.href.split("pages")[1].toString()) {
       });
 
     pdfToHtmlBtn.addEventListener("click", async () => {
-      const attribute = pdfToHtmlBtn.getAttribute("appropos");
+      const attribute = pdfToHtmlBtn.getAttribute("appropos") as string;
 
       const response = await fetchUrl(
         `/api/convert-pdf-to-html/${attribute}`,
@@ -426,9 +488,17 @@ switch (window.location.href.split("pages")[1].toString()) {
       );
 
       if (response?.status?.toLowerCase() === "success") {
-        toggleButton(pdfToHtmlBtn, downloadPDFBtn);
+        toggleButton(pdfToHtmlBtn, downloadPDFBtn, attribute);
       }
       console.log(response);
     });
+
+    downloadPDFBtn.addEventListener("click", () => {
+      const attribute = downloadPDFBtn.getAttribute("appropos") as string;
+      downloadFile(attribute, "zip", "html", {
+        "Content-Type": "application/zip",
+      });
+    });
+
     break;
 }
