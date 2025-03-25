@@ -20,6 +20,7 @@ export interface Util {
   deleteFile: (path: string) => Promise<void>;
   deleteFolder: (path: string) => Promise<void>;
   checkPath: (path: string) => Promise<void>;
+  fiveMinutesThenDelete: (path: string) => Promise<void>;
 }
 
 export interface Pdf {
@@ -40,4 +41,12 @@ export type optionsDocx = {
   docxId: string;
   name: string;
   extension: string;
+};
+
+export type Job = {
+  name: string;
+  type: "convertPdf" | "convertDocx" | "merge" | "compress";
+  id: string;
+  file_extension: "pdf" | "docx";
+  dest_extension?: "txt" | "docx" | "pdf" | "html" | "png";
 };

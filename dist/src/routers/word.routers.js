@@ -33,4 +33,4 @@ router.put("/api/convert-word-to-html/:docxId", Docx.convertDocxToHTML);
 // convert Docx to PDF
 router.put("/api/convert-docx-to-pdf/:docxId", Docx.convertDocxToPDF);
 // get docx file
-router.get("/api/get-docx-file", Docx.getDocx);
+router.get("/api/get-docx-file/:docxId", Docx.getDocx);

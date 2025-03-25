@@ -44,15 +44,17 @@ exports.compressPDF = compressPDF;
 exports.mergePF = mergePF;
 exports.getPDF = getPDF;
 const node_path_1 = __importDefault(require("node:path"));
+const node_cluster_1 = __importDefault(require("node:cluster"));
 const node_crypto_1 = __importDefault(require("node:crypto"));
 const promises_1 = __importDefault(require("node:fs/promises"));
+const node_process_1 = __importDefault(require("node:process"));
 const promises_2 = require("node:stream/promises");
 const util_1 = require("../../lib/util");
 const pdftoword_services_1 = require("../services/pdftoword.services");
-const poppler = __importStar(require("../../lib/poppler"));
-const gs = __importStar(require("../../lib/ghostscript"));
 const libreoffice = __importStar(require("../../lib/libreoffice"));
+const jobQueue_1 = require("../../lib/jobQueue");
 const word_services_1 = require("../services/word.services");
+const job = new jobQueue_1.JobQueue();
 const wordService = new word_services_1.WordService();
 const PDFtoWordService = new pdftoword_services_1.PDFToWordService();
 function uploadFile(req, res) {
@@ -115,18 +117,31 @@ function convertPDFToText(req, res) {
                     .status(404)
                     .json({ status: "failed", message: "PDF file not found" });
             }
-            const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
-            const textPath = `./storage/${pdf.pdfId}/original.txt`;
-            yield poppler.makeText(originalPath, textPath);
+            if (node_cluster_1.default.isPrimary) {
+                job.enqueue({
+                    type: "convertPdf",
+                    id: pdf.pdfId,
+                    file_extension: "pdf",
+                    dest_extension: "txt",
+                    name: pdf.name,
+                });
+            }
+            else {
+                if (node_process_1.default.send)
+                    node_process_1.default.send({
+                        type: "convertPdf",
+                        id: pdf.pdfId,
+                        file_extension: "pdf",
+                        dest_extension: "txt",
+                        name: pdf.name,
+                    });
+            }
             res.status(200).json({
                 status: "success",
                 message: ".TXT file made successfully!",
             });
         }
         catch (e) {
-            if (pdf) {
-                yield util_1.util.deleteFile(`./storage/${pdf.pdfId}/original.txt`);
-            }
             res.status(500).json({
                 status: "Failed",
                 message: `Operation Failed ${e}`,
@@ -144,19 +159,32 @@ function convertPDFToHTML(req, res) {
                     .status(404)
                     .json({ status: "failed", message: "PDF file not found" });
             }
-            yield promises_1.default.mkdir(`./storage/${pdf.pdfId}/html/`, { recursive: true });
-            const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
-            const htmlPath = `./storage/${pdf.pdfId}/html/original.html`;
-            yield poppler.makeHTML(originalPath, htmlPath);
+            if (node_cluster_1.default.isPrimary) {
+                job.enqueue({
+                    type: "convertPdf",
+                    id: pdf.pdfId,
+                    file_extension: "pdf",
+                    dest_extension: "html",
+                    name: pdf.name,
+                });
+            }
+            else {
+                if (node_process_1.default.send)
+                    node_process_1.default.send({
+                        type: "convertPdf",
+                        id: pdf.pdfId,
+                        file_extension: "pdf",
+                        dest_extension: "html",
+                        name: pdf.name,
+                    });
+            }
             res.status(200).json({
                 status: "success",
                 message: "HTML file made successfully!",
             });
         }
         catch (e) {
-            if (pdf) {
-                yield util_1.util.deleteFile(`./storage/${pdf.pdfId}/original.txt`);
-            }
+            console.log(e);
             res.status(500).json({
                 status: "Failed",
                 message: `Operation Failed ${e}`,
@@ -203,21 +231,31 @@ function convertPDFToPNG(req, res) {
                     .status(404)
                     .json({ status: "failed", message: "PDF file not found" });
             }
-            yield promises_1.default.mkdir(`./storage/${pdf.pdfId}/pdf-image-folder/`, {
-                recursive: true,
-            });
-            const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
-            const imagePath = `./storage/${pdf.pdfId}/pdf-image-folder/original.png`;
-            yield poppler.makeImage(originalPath, imagePath);
+            if (node_cluster_1.default.isPrimary) {
+                job.enqueue({
+                    type: "convertPdf",
+                    id: pdf.pdfId,
+                    file_extension: "pdf",
+                    dest_extension: "png",
+                    name: pdf.name,
+                });
+            }
+            else {
+                if (node_process_1.default.send)
+                    node_process_1.default.send({
+                        type: "convertPdf",
+                        id: pdf.pdfId,
+                        file_extension: "pdf",
+                        dest_extension: "png",
+                        name: pdf.name,
+                    });
+            }
             res.status(200).json({
                 status: "Success",
                 message: "PDF converted to PNG successfully.",
             });
         }
         catch (e) {
-            if (pdf) {
-                yield util_1.util.deleteFolder(`./storage/${pdf.pdfId}/pdf-image-folder/`);
-            }
             res.status(500).json({
                 status: "Failed",
                 message: `Operation Failed ${e}`,
@@ -235,19 +273,29 @@ function compressPDF(req, res) {
                     .status(404)
                     .json({ status: "failed", message: "PDF file not found" });
             }
-            const originalPath = `./storage/${pdf.pdfId}/original.${pdf.extension}`;
-            const destination = `./storage/${pdf.pdfId}/original-compressed.pdf`;
-            yield gs.compressPDF(originalPath, destination);
+            if (node_cluster_1.default.isPrimary) {
+                job.enqueue({
+                    type: "compress",
+                    id: pdf.pdfId,
+                    file_extension: "pdf",
+                    name: pdf.name,
+                });
+            }
+            else {
+                if (node_process_1.default.send)
+                    node_process_1.default.send({
+                        type: "compress",
+                        id: pdf.pdfId,
+                        file_extension: "pdf",
+                        name: pdf.name,
+                    });
+            }
             res.status(200).json({
                 status: "Success",
                 message: "PDF file compressed successfully!",
             });
         }
         catch (e) {
-            if (pdf) {
-                yield util_1.util.deleteFolder(`./storage/${pdf.pdfId}/original-compressed.pdf`);
-                yield util_1.util.deleteFile(`./storage/${pdf.pdfId}/original.${pdf.extension}`);
-            }
             res.status(500).json({
                 status: "Failed",
                 message: `Operation Failed ${e}`,
@@ -266,22 +314,30 @@ function mergePF(req, res) {
                     .status(404)
                     .json({ status: "failed", message: "PDF files not found" });
             }
-            const firstFilePath = `./storage/${first.pdfId}/original.${first.extension}`;
-            const secondFilePath = `./storage/${second.pdfId}/original.${second.extension}`;
-            yield promises_1.default.mkdir(`./storage/${first.pdfId}-${second.pdfId}/`, {
-                recursive: true,
-            });
-            const mergedFileDestination = `./storage/${first.pdfId}-${second.pdfId}/${first.name}-${second.name}-merged.pdf`;
-            yield poppler.mergePDF(firstFilePath, secondFilePath, mergedFileDestination);
+            if (node_cluster_1.default.isPrimary) {
+                job.enqueue({
+                    type: "merge",
+                    id: `${first.pdfId}-${second.pdfId}`,
+                    file_extension: "pdf",
+                    name: `${first.name}-${second.name}`,
+                });
+            }
+            else {
+                if (node_process_1.default.send)
+                    node_process_1.default.send({
+                        type: "merge",
+                        id: `${first.pdfId}-${second.pdfId}`,
+                        file_extension: "pdf",
+                        name: `${first.name}-${second.name}`,
+                    });
+            }
             res.status(200).json({
                 status: "Success",
                 message: "PDF files merged successfully!",
             });
         }
         catch (e) {
-            if (first && second) {
-                yield util_1.util.deleteFile(`./storage/${first.pdfId}-${second.pdfId}/merged.pdf/`);
-            }
+            console.log(e);
             res.status(500).json({
                 status: "Failed",
                 message: `Operation Failed ${e}`,

@@ -25,6 +25,6 @@ router.put("/api/compress-pdf/:pdfId", PDF.compressPDF as any);
 router.put("/api/merge-pdfs/:firstPdfId/:secondPdfId", PDF.mergePF as any);
 
 // get a specific pdf file
-router.get("/api/get-pdf-file", PDF.getPDF as any);
+router.get("/api/get-pdf-file/:pdfId", PDF.getPDF as any);
 
 export { router };

@@ -14,6 +14,9 @@ app.use(express_1.default.json());
 app.use(pdftoword_routers_1.router);
 app.use(word_routers_1.router);
 app.use(download_routers_1.router);
+app.use((req, res) => {
+    res.status(404).sendFile("404.html", { root: "./public/pages" });
+});
 app.listen(PORT, () => {
     console.log(`App is listening on port ${PORT}!`);
 });

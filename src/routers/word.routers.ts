@@ -10,6 +10,6 @@ router.put("/api/convert-word-to-html/:docxId", Docx.convertDocxToHTML as any);
 router.put("/api/convert-docx-to-pdf/:docxId", Docx.convertDocxToPDF as any);
 
 // get docx file
-router.get("/api/get-docx-file", Docx.getDocx as any);
+router.get("/api/get-docx-file/:docxId", Docx.getDocx as any);
 
 export { router };
