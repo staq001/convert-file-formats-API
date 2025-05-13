@@ -176,11 +176,7 @@ export async function mergePDF(
     }
 
     if (first && second) {
-      const customName = first.name
-        ? second.name
-          ? `${first.name}-${second.name}`
-          : "file"
-        : "file";
+      const customName = `${first.name}-${second.name}`;
 
       await fs.access(
         `./storage/${first.pdfId}-${second.pdfId}/${first.name}-${second.name}-merged.pdf`,

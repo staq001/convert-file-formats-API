@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PDFToWordService = void 0;
 const DB_1 = require("../DB");
+const util_1 = require("../../lib/util");
 class PDFToWordService {
     constructor() {
         this.db = new DB_1.DB();
@@ -35,6 +36,20 @@ class PDFToWordService {
             const pdf = this.db.pdf.find((pdf) => pdf.pdfId === pdfId);
             this.db.save();
             return pdf;
+        });
+    }
+    deletePDFAfter15Minutes(pdfId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // delete the pdf file after 5 minutes
+            setTimeout(() => {
+                this.db.update();
+                const pdfIndex = this.db.pdf.findIndex((pdf) => pdf.pdfId === pdfId);
+                if (pdfIndex !== -1) {
+                    util_1.util.deleteFolder(`./storage/${pdfId}`);
+                    this.db.pdf.splice(pdfIndex, 1);
+                    this.db.save();
+                }
+            }, 15 * 60 * 1000);
         });
     }
 }

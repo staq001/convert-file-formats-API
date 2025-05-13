@@ -136,6 +136,7 @@ function convertPDFToText(req, res) {
                         name: pdf.name,
                     });
             }
+            yield PDFtoWordService.deletePDFAfter15Minutes(pdf.pdfId);
             res.status(200).json({
                 status: "success",
                 message: ".TXT file made successfully!",
@@ -178,6 +179,7 @@ function convertPDFToHTML(req, res) {
                         name: pdf.name,
                     });
             }
+            yield PDFtoWordService.deletePDFAfter15Minutes(pdf.pdfId);
             res.status(200).json({
                 status: "success",
                 message: "HTML file made successfully!",
@@ -250,6 +252,7 @@ function convertPDFToPNG(req, res) {
                         name: pdf.name,
                     });
             }
+            yield PDFtoWordService.deletePDFAfter15Minutes(pdf.pdfId);
             res.status(200).json({
                 status: "Success",
                 message: "PDF converted to PNG successfully.",
@@ -290,6 +293,7 @@ function compressPDF(req, res) {
                         name: pdf.name,
                     });
             }
+            yield PDFtoWordService.deletePDFAfter15Minutes(pdf.pdfId);
             res.status(200).json({
                 status: "Success",
                 message: "PDF file compressed successfully!",
@@ -331,6 +335,9 @@ function mergePF(req, res) {
                         name: `${first.name}-${second.name}`,
                     });
             }
+            yield PDFtoWordService.deletePDFAfter15Minutes(first.pdfId);
+            yield PDFtoWordService.deletePDFAfter15Minutes(second.pdfId);
+            yield PDFtoWordService.deletePDFAfter15Minutes(`${first.pdfId}-${second.pdfId}`);
             res.status(200).json({
                 status: "Success",
                 message: "PDF files merged successfully!",

@@ -89,6 +89,7 @@ async function downloadFile(
         ?.match(/filename="(.+)"/)?.[1] || `download.${fileType}`;
 
     if (!response.ok) {
+      alert("File has been deleted, Please upload again");
       throw new Error("File Download failed!");
     }
     const blob = await response.blob();

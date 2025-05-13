@@ -106,7 +106,7 @@ export async function convertPDFToText(
           name: pdf.name,
         });
     }
-
+    await PDFtoWordService.deletePDFAfter10Minutes(pdf.pdfId);
     res.status(200).json({
       status: "success",
       message: ".TXT file made successfully!",
@@ -150,6 +150,7 @@ export async function convertPDFToHTML(
           name: pdf.name,
         });
     }
+    await PDFtoWordService.deletePDFAfter10Minutes(pdf.pdfId);
     res.status(200).json({
       status: "success",
       message: "HTML file made successfully!",
@@ -229,6 +230,7 @@ export async function convertPDFToPNG(
         });
     }
 
+    await PDFtoWordService.deletePDFAfter10Minutes(pdf.pdfId);
     res.status(200).json({
       status: "Success",
       message: "PDF converted to PNG successfully.",
@@ -271,7 +273,7 @@ export async function compressPDF(
           name: pdf.name,
         });
     }
-
+    await PDFtoWordService.deletePDFAfter10Minutes(pdf.pdfId);
     res.status(200).json({
       status: "Success",
       message: "PDF file compressed successfully!",
@@ -299,7 +301,6 @@ export async function mergePF(
         .status(404)
         .json({ status: "failed", message: "PDF files not found" });
     }
-
     if (cluster.isPrimary) {
       job.enqueue({
         type: "merge",
@@ -316,7 +317,11 @@ export async function mergePF(
           name: `${first.name}-${second.name}`,
         });
     }
-
+    await PDFtoWordService.deletePDFAfter10Minutes(first.pdfId);
+    await PDFtoWordService.deletePDFAfter10Minutes(second.pdfId);
+    await PDFtoWordService.deletePDFAfter10Minutes(
+      `${first.pdfId}-${second.pdfId}`
+    );
     res.status(200).json({
       status: "Success",
       message: "PDF files merged successfully!",

@@ -1,6 +1,6 @@
 import { DB } from "../DB";
 import type { DocxService, Docx, optionsDocx } from "../types";
-
+import { util } from "../../lib/util";
 export class WordService implements DocxService {
   private db;
 
@@ -25,5 +25,17 @@ export class WordService implements DocxService {
     this.db.update();
     const docx = this.db.docx.find((docx) => docx.docxId === docxId);
     return docx;
+  }
+  async deleteDocxAfter5Minutes(pdfId: string) {
+    // delete the docx file after 5 minutes
+    setTimeout(() => {
+      this.db.update();
+      const pdfIndex = this.db.pdf.findIndex((pdf) => pdf.pdfId === pdfId);
+      if (pdfIndex !== -1) {
+        util.deleteFolder(`./storage/${pdfId}`);
+        this.db.pdf.splice(pdfIndex, 1);
+        this.db.save();
+      }
+    }, 5 * 60 * 1000);
   }
 }

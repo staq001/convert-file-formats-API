@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WordService = void 0;
 const DB_1 = require("../DB");
+const util_1 = require("../../lib/util");
 class WordService {
     constructor() {
         this.db = new DB_1.DB();
@@ -34,6 +35,20 @@ class WordService {
             this.db.update();
             const docx = this.db.docx.find((docx) => docx.docxId === docxId);
             return docx;
+        });
+    }
+    deleteDocxAfter5Minutes(pdfId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // delete the docx file after 5 minutes
+            setTimeout(() => {
+                this.db.update();
+                const pdfIndex = this.db.pdf.findIndex((pdf) => pdf.pdfId === pdfId);
+                if (pdfIndex !== -1) {
+                    util_1.util.deleteFolder(`./storage/${pdfId}`);
+                    this.db.pdf.splice(pdfIndex, 1);
+                    this.db.save();
+                }
+            }, 5 * 60 * 1000);
         });
     }
 }

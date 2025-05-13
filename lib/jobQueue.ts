@@ -31,7 +31,7 @@ export class JobQueue {
 
   async execute(job: Job) {
     switch (job.type) {
-      // merge pdf
+      // merge pdf-
       case "merge":
         const [first, second] = job.id.split("-");
         const [firstName, secondName] = job.name.split("-");
@@ -52,7 +52,8 @@ export class JobQueue {
           );
           console.log(`Done! Number of Jobs remaining: ${this.jobs.length}`);
         } catch (e) {
-          await util.deleteFolder(`./storage/${first}-${second}/`);
+          console.log(e);
+          // await util.deleteFolder(`./storage/${first}-${second}/`);
         }
         break;
 

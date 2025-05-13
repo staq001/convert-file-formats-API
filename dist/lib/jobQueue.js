@@ -63,7 +63,7 @@ class JobQueue {
     execute(job) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (job.type) {
-                // merge pdf
+                // merge pdf-
                 case "merge":
                     const [first, second] = job.id.split("-");
                     const [firstName, secondName] = job.name.split("-");
@@ -78,7 +78,8 @@ class JobQueue {
                         console.log(`Done! Number of Jobs remaining: ${this.jobs.length}`);
                     }
                     catch (e) {
-                        yield util_1.util.deleteFolder(`./storage/${first}-${second}/`);
+                        console.log(e);
+                        // await util.deleteFolder(`./storage/${first}-${second}/`);
                     }
                     break;
                 // compress pdf

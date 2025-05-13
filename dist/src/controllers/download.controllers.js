@@ -148,11 +148,7 @@ function mergePDF(req, res) {
                 });
             }
             if (first && second) {
-                const customName = first.name
-                    ? second.name
-                        ? `${first.name}-${second.name}`
-                        : "file"
-                    : "file";
+                const customName = `${first.name}-${second.name}`;
                 yield promises_1.default.access(`./storage/${first.pdfId}-${second.pdfId}/${first.name}-${second.name}-merged.pdf`, promises_1.default.constants.F_OK);
                 res.download(`./storage/${first.pdfId}-${second.pdfId}/${first.name}-${second.name}-merged.pdf`, `${customName}.pdf`);
             }

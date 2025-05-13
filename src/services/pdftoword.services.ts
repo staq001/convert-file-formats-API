@@ -1,5 +1,6 @@
 import { DB } from "../DB";
 import type { PDFtoWordService, options, Pdf } from "../types";
+import { util } from "../../lib/util";
 
 export class PDFToWordService implements PDFtoWordService {
   private db = new DB();
@@ -23,5 +24,17 @@ export class PDFToWordService implements PDFtoWordService {
 
     this.db.save();
     return pdf;
+  }
+  async deletePDFAfter10Minutes(pdfId: string) {
+    // delete the pdf file after 5 minutes
+    setTimeout(() => {
+      this.db.update();
+      const pdfIndex = this.db.pdf.findIndex((pdf) => pdf.pdfId === pdfId);
+      if (pdfIndex !== -1) {
+        util.deleteFolder(`./storage/${pdfId}`);
+        this.db.pdf.splice(pdfIndex, 1);
+        this.db.save();
+      }
+    }, 10 * 60 * 1000);
   }
 }

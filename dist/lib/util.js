@@ -62,8 +62,4 @@ exports.util = {
             yield fs.mkdir(path);
         }));
     }),
-    fiveMinutesThenDelete: (path) => __awaiter(void 0, void 0, void 0, function* () {
-        // do nothing
-    }),
 };
-// question is, why not put it in the service? that way we delete the record from the db and delete the actual storage of the folders and files as well?
