@@ -14,7 +14,6 @@ if (node_cluster_1.default.isPrimary) {
     }
     node_cluster_1.default.on("message", (worker, message, handle) => {
         const { type, id, file_extension, dest_extension, name } = message;
-        console.log(message);
         job.enqueue({
             type,
             id,
