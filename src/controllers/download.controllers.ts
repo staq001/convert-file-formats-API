@@ -70,12 +70,6 @@ export async function pdftoJpeg(
         });
       }
 
-      res.setHeader("Content-Type", "application/zip");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename=${customName}.zip`
-      );
-
       const archive = archiver("zip", { zlib: { level: 9 } });
       archive.pipe(res);
 
@@ -115,12 +109,6 @@ export async function pdfToHtml(
           message: "Folder not found",
         });
       }
-
-      res.setHeader("Content-Type", "application/zip");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename=${customName}.zip`
-      );
 
       const archive = archiver("zip", { zlib: { level: 9 } });
       archive.pipe(res);
@@ -179,12 +167,12 @@ export async function mergePDF(
       const customName = `${first.name}-${second.name}`;
 
       await fs.access(
-        `./storage/${first.pdfId}-${second.pdfId}/${first.name}-${second.name}-merged.pdf`,
+        `./storage/${first.pdfId}/merged-file.pdf`,
         fs.constants.F_OK
       );
 
       res.download(
-        `./storage/${first.pdfId}-${second.pdfId}/${first.name}-${second.name}-merged.pdf`,
+        `./storage/${first.pdfId}/merged-file.pdf`,
         `${customName}.pdf`
       );
     }

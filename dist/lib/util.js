@@ -46,7 +46,11 @@ exports.util = {
     }),
     deleteFolder: (path) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            yield fs.rm(path, { recursive: true });
+            const stat = yield fs.stat(path);
+            if (stat.isDirectory()) {
+                yield fs.rm(path, { recursive: true });
+            }
+            return;
         }
         catch (err) {
             throw new Error(`${err}`);

@@ -8,13 +8,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PDFToWordService = void 0;
 const DB_1 = require("../DB");
 const util_1 = require("../../lib/util");
+const promises_1 = __importDefault(require("fs/promises"));
 class PDFToWordService {
     constructor() {
         this.db = new DB_1.DB();
+        // if server restarts, we need to restart delete operations that never completed.
+        this.db.pdf.forEach((pdf) => {
+            if (this.db.pdf.length >= 0) {
+                const pdfId = pdf.pdfId;
+                this.deletePDFAfter10Minutes(pdfId);
+            }
+            return;
+        });
     }
     uploadPDF(details) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -38,18 +50,33 @@ class PDFToWordService {
             return pdf;
         });
     }
-    deletePDFAfter15Minutes(pdfId) {
+    deletePDFAfter10Minutes(pdfId) {
         return __awaiter(this, void 0, void 0, function* () {
-            // delete the pdf file after 5 minutes
-            setTimeout(() => {
+            // delete the pdf file after 10 minutes
+            setTimeout(() => __awaiter(this, void 0, void 0, function* () {
                 this.db.update();
                 const pdfIndex = this.db.pdf.findIndex((pdf) => pdf.pdfId === pdfId);
                 if (pdfIndex !== -1) {
-                    util_1.util.deleteFolder(`./storage/${pdfId}`);
                     this.db.pdf.splice(pdfIndex, 1);
                     this.db.save();
+                    // delete the folder
+                    try {
+                        const folderPath = `./storage/${pdfId}`;
+                        const stat = yield promises_1.default.stat(folderPath);
+                        if (stat.isDirectory()) {
+                            yield util_1.util.deleteFolder(folderPath);
+                        }
+                    }
+                    catch (e) {
+                        if (e.code === "ENOENT") {
+                            console.error(`Folder doesn't exist: ${e.message}`);
+                        }
+                        else {
+                            console.error(`Error deleting folder: ${e.message}`);
+                        }
+                    }
                 }
-            }, 15 * 60 * 1000);
+            }), 3 * 60 * 1000);
         });
     }
 }

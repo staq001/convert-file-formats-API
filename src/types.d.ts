@@ -50,4 +50,6 @@ export type Job = {
   id: string;
   file_extension: "pdf" | "docx";
   dest_extension?: "txt" | "docx" | "pdf" | "html" | "png";
+  resolve?: () => void;
+  reject?: (err?: any) => void;
 };

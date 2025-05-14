@@ -15,7 +15,11 @@ export const util: Util = {
 
   deleteFolder: async (path: string) => {
     try {
-      await fs.rm(path, { recursive: true });
+      const stat = await fs.stat(path);
+      if (stat.isDirectory()) {
+        await fs.rm(path, { recursive: true });
+      }
+      return;
     } catch (err) {
       throw new Error(`${err}`);
     }

@@ -83,13 +83,11 @@ async function downloadFile(
       }
     );
 
-    const customFileName =
-      response.headers
-        .get("Content-Disposition")
-        ?.match(/filename="(.+)"/)?.[1] || `download.${fileType}`;
+    if (response.status === 404) {
+      alert("File has been deleted, Please restart operation");
+    }
 
     if (!response.ok) {
-      alert("File has been deleted, Please upload again");
       throw new Error("File Download failed!");
     }
     const blob = await response.blob();
@@ -97,7 +95,6 @@ async function downloadFile(
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = customFileName;
     link.click();
 
     window.URL.revokeObjectURL(url);

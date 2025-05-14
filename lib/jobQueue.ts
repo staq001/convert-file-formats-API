@@ -34,15 +34,11 @@ export class JobQueue {
       // merge pdf-
       case "merge":
         const [first, second] = job.id.split("-");
-        const [firstName, secondName] = job.name.split("-");
 
         const firstFilePath = `./storage/${first}/original.${job.file_extension}`;
         const secondFilePath = `./storage/${second}/original.${job.file_extension}`;
 
-        await fs.mkdir(`./storage/${first}-${second}/`, {
-          recursive: true,
-        });
-        const mergedFileDestination = `./storage/${first}-${second}/${firstName}-${secondName}-merged.pdf`;
+        const mergedFileDestination = `./storage/${first}/merged-file.pdf`;
 
         try {
           await poppler.mergePDF(
@@ -52,8 +48,7 @@ export class JobQueue {
           );
           console.log(`Done! Number of Jobs remaining: ${this.jobs.length}`);
         } catch (e) {
-          console.log(e);
-          // await util.deleteFolder(`./storage/${first}-${second}/`);
+          await util.deleteFolder(`./storage/${first}-${second}/`);
         }
         break;
 

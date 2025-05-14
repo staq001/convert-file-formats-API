@@ -156,7 +156,6 @@ export async function convertPDFToHTML(
       message: "HTML file made successfully!",
     });
   } catch (e) {
-    console.log(e);
     res.status(500).json({
       status: "Failed",
       message: `Operation Failed ${e}`,
@@ -319,15 +318,12 @@ export async function mergePF(
     }
     await PDFtoWordService.deletePDFAfter10Minutes(first.pdfId);
     await PDFtoWordService.deletePDFAfter10Minutes(second.pdfId);
-    await PDFtoWordService.deletePDFAfter10Minutes(
-      `${first.pdfId}-${second.pdfId}`
-    );
+
     res.status(200).json({
       status: "Success",
       message: "PDF files merged successfully!",
     });
   } catch (e) {
-    console.log(e);
     res.status(500).json({
       status: "Failed",
       message: `Operation Failed ${e}`,

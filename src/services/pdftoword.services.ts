@@ -1,9 +1,23 @@
 import { DB } from "../DB";
 import type { PDFtoWordService, options, Pdf } from "../types";
 import { util } from "../../lib/util";
+import fs from "fs/promises";
 
 export class PDFToWordService implements PDFtoWordService {
-  private db = new DB();
+  private db;
+
+  constructor() {
+    this.db = new DB();
+
+    // if server restarts, we need to restart delete operations that never completed.
+    this.db.pdf.forEach((pdf) => {
+      if (this.db.pdf.length >= 0) {
+        const pdfId = pdf.pdfId;
+        this.deletePDFAfter10Minutes(pdfId);
+      }
+      return;
+    });
+  }
 
   public async uploadPDF(details: options) {
     // upload to storage and save to artificial DB
@@ -26,15 +40,29 @@ export class PDFToWordService implements PDFtoWordService {
     return pdf;
   }
   async deletePDFAfter10Minutes(pdfId: string) {
-    // delete the pdf file after 5 minutes
-    setTimeout(() => {
+    // delete the pdf file after 10 minutes
+    setTimeout(async () => {
       this.db.update();
       const pdfIndex = this.db.pdf.findIndex((pdf) => pdf.pdfId === pdfId);
       if (pdfIndex !== -1) {
-        util.deleteFolder(`./storage/${pdfId}`);
         this.db.pdf.splice(pdfIndex, 1);
         this.db.save();
+
+        // delete the folder
+        try {
+          const folderPath = `./storage/${pdfId}`;
+          const stat = await fs.stat(folderPath);
+          if (stat.isDirectory()) {
+            await util.deleteFolder(folderPath);
+          }
+        } catch (e: any) {
+          if (e.code === "ENOENT") {
+            console.error(`Folder doesn't exist: ${e.message}`);
+          } else {
+            console.error(`Error deleting folder: ${e.message}`);
+          }
+        }
       }
-    }, 10 * 60 * 1000);
+    }, 3 * 60 * 1000);
   }
 }

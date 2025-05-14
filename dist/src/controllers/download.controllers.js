@@ -66,8 +66,6 @@ function pdftoJpeg(req, res) {
                         message: "Folder not found",
                     });
                 }
-                res.setHeader("Content-Type", "application/zip");
-                res.setHeader("Content-Disposition", `attachment; filename=${customName}.zip`);
                 const archive = (0, archiver_1.default)("zip", { zlib: { level: 9 } });
                 archive.pipe(res);
                 archive.directory(folder, false);
@@ -100,8 +98,6 @@ function pdfToHtml(req, res) {
                         message: "Folder not found",
                     });
                 }
-                res.setHeader("Content-Type", "application/zip");
-                res.setHeader("Content-Disposition", `attachment; filename=${customName}.zip`);
                 const archive = (0, archiver_1.default)("zip", { zlib: { level: 9 } });
                 archive.pipe(res);
                 archive.directory(folder, false);
@@ -149,8 +145,8 @@ function mergePDF(req, res) {
             }
             if (first && second) {
                 const customName = `${first.name}-${second.name}`;
-                yield promises_1.default.access(`./storage/${first.pdfId}-${second.pdfId}/${first.name}-${second.name}-merged.pdf`, promises_1.default.constants.F_OK);
-                res.download(`./storage/${first.pdfId}-${second.pdfId}/${first.name}-${second.name}-merged.pdf`, `${customName}.pdf`);
+                yield promises_1.default.access(`./storage/${first.pdfId}/merged-file.pdf`, promises_1.default.constants.F_OK);
+                res.download(`./storage/${first.pdfId}/merged-file.pdf`, `${customName}.pdf`);
             }
         }
         catch (e) {

@@ -46,8 +46,12 @@ class JobQueue {
         this.currentJob = null;
     }
     enqueue(job) {
-        this.jobs.push(job);
-        this.executeNext();
+        return new Promise((resolve, reject) => {
+            job.resolve = resolve;
+            job.reject = reject;
+            this.jobs.push(job);
+            this.executeNext();
+        });
     }
     dequeue() {
         return this.jobs.shift();
@@ -62,24 +66,22 @@ class JobQueue {
     }
     execute(job) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
             switch (job.type) {
                 // merge pdf-
                 case "merge":
                     const [first, second] = job.id.split("-");
-                    const [firstName, secondName] = job.name.split("-");
                     const firstFilePath = `./storage/${first}/original.${job.file_extension}`;
                     const secondFilePath = `./storage/${second}/original.${job.file_extension}`;
-                    yield promises_1.default.mkdir(`./storage/${first}-${second}/`, {
-                        recursive: true,
-                    });
-                    const mergedFileDestination = `./storage/${first}-${second}/${firstName}-${secondName}-merged.pdf`;
+                    const mergedFileDestination = `./storage/${first}/merged-file.pdf`;
                     try {
                         yield poppler.mergePDF(firstFilePath, secondFilePath, mergedFileDestination);
+                        (_a = job.resolve) === null || _a === void 0 ? void 0 : _a.call(job);
                         console.log(`Done! Number of Jobs remaining: ${this.jobs.length}`);
                     }
                     catch (e) {
-                        console.log(e);
-                        // await util.deleteFolder(`./storage/${first}-${second}/`);
+                        yield util_1.util.deleteFolder(`./storage/${first}-${second}/`);
+                        (_b = job.reject) === null || _b === void 0 ? void 0 : _b.call(job, e);
                     }
                     break;
                 // compress pdf
@@ -88,10 +90,12 @@ class JobQueue {
                     const destination = `./storage/${job.id}/original-compressed.pdf`;
                     try {
                         yield gs.compressPDF(originalPath, destination);
+                        (_c = job.resolve) === null || _c === void 0 ? void 0 : _c.call(job);
                         console.log(`Done! Number of Jobs remaining: ${this.jobs.length}`);
                     }
                     catch (e) {
                         yield util_1.util.deleteFile(destination);
+                        (_d = job.reject) === null || _d === void 0 ? void 0 : _d.call(job, e);
                     }
                     break;
                 // all conversions.
@@ -102,10 +106,12 @@ class JobQueue {
                             const textPath = `./storage/${job.id}/original.${job.dest_extension}`;
                             try {
                                 yield poppler.makeText(originalPath, textPath);
+                                (_e = job.resolve) === null || _e === void 0 ? void 0 : _e.call(job);
                                 console.log(`Done! Number of Jobs remaining: ${this.jobs.length}`);
                             }
                             catch (e) {
                                 util_1.util.deleteFile(textPath);
+                                (_f = job.reject) === null || _f === void 0 ? void 0 : _f.call(job, e);
                             }
                             break;
                         case "html":
@@ -114,10 +120,12 @@ class JobQueue {
                             const htmlPath = `./storage/${job.id}/html/original.${job.dest_extension}`;
                             try {
                                 yield poppler.makeHTML(inputFilePath, htmlPath);
+                                (_g = job.resolve) === null || _g === void 0 ? void 0 : _g.call(job);
                                 console.log(`Done! Number of Jobs remaining: ${this.jobs.length}`);
                             }
                             catch (e) {
                                 yield util_1.util.deleteFolder(`./storage/${job.id}/html/`);
+                                (_h = job.reject) === null || _h === void 0 ? void 0 : _h.call(job, e);
                             }
                             break;
                         case "png":
@@ -128,10 +136,12 @@ class JobQueue {
                             const imagePath = `./storage/${job.id}/pdf-image-folder/original.${job.dest_extension}`;
                             try {
                                 yield poppler.makeImage(filePath, imagePath);
+                                (_j = job.resolve) === null || _j === void 0 ? void 0 : _j.call(job);
                                 console.log(`Done! Number of Jobs remaining: ${this.jobs.length}`);
                             }
                             catch (e) {
                                 yield util_1.util.deleteFolder(`./storage/${job.id}/pdf-image-folder/`);
+                                (_k = job.reject) === null || _k === void 0 ? void 0 : _k.call(job, e);
                             }
                             break;
                         case "docx":
