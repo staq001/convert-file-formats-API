@@ -31,12 +31,9 @@ Navigate to the project directory and install the required dependencies.
 npm install
 ```
 ### 3. Configure Environment Variables
-Create a .env file in the root directory of the project and add your environment-specific variables. You can use the provided .env.example file as a reference.
 ```bash
-cp .env.example .env
+Project uses no environment variables 
 ```
-Edit the .env file to match your environment configuration.
-
 ### 4. Run the Development Server
 Start the development server with the following command. This will also watch for any changes in your code and automatically restart the server.
 ```bash
