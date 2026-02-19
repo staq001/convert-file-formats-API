@@ -2,18 +2,20 @@ import cluster from "node:cluster";
 import os from "node:os";
 import { JobQueue } from "../lib/jobQueue";
 
-const job = new JobQueue();
+let job: JobQueue | null;
 const coresCount = os.availableParallelism();
 
 if (cluster.isPrimary) {
+  job = new JobQueue();
+
   for (let i = 0; i < coresCount; i++) {
     cluster.fork();
   }
 
-  cluster.on("message", (worker, message, handle) => {
+  cluster.on("message", async (worker, message, handle) => {
     const { type, id, file_extension, dest_extension, name } = message;
 
-    job.enqueue({
+    job!.enqueue({
       type,
       id,
       file_extension,
@@ -24,7 +26,7 @@ if (cluster.isPrimary) {
 
   cluster.on("exit", (worker, code, signal) => {
     console.log(
-      `Worker ${worker.process.pid} died (${signal} | ${code}). Restarting...`
+      `Worker ${worker.process.pid} died (${signal} | ${code}). Restarting...`,
     );
     cluster.fork();
   });

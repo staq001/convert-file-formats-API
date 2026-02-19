@@ -219,17 +219,17 @@ export async function convertPDFToPNG(
         name: pdf.name,
       });
     } else {
-      if (process.send)
-        process.send({
-          type: "convertPdf",
-          id: pdf.pdfId,
-          file_extension: "pdf",
-          dest_extension: "png",
-          name: pdf.name,
-        });
+      (process as any).send({
+        type: "convertPdf",
+        id: pdf.pdfId,
+        file_extension: "pdf",
+        dest_extension: "png",
+        name: pdf.name,
+      });
     }
 
     await PDFtoWordService.deletePDFAfter10Minutes(pdf.pdfId);
+    console.log("executed");
     res.status(200).json({
       status: "Success",
       message: "PDF converted to PNG successfully.",
