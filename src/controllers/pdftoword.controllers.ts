@@ -3,13 +3,13 @@ import path from "node:path";
 import cluster from "node:cluster";
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
-import process from "node:process";
 import { pipeline } from "node:stream/promises";
 import { util } from "../../lib/util";
 import { PDFToWordService } from "../services/pdftoword.services";
 import * as libreoffice from "../../lib/libreoffice";
 import { JobQueue } from "../../lib/jobQueue";
 import { WordService } from "../services/word.services";
+import { sendJobAndWait } from "../jobCompletion";
 
 const job = new JobQueue();
 const wordService = new WordService();
@@ -76,7 +76,7 @@ export async function uploadFile(req: Request, res: Response) {
 
 export async function convertPDFToText(
   req: Request<{ pdfId: string }>,
-  res: Response
+  res: Response,
 ) {
   const { pdfId } = req.params;
   const pdf = await PDFtoWordService.getPDF(pdfId);
@@ -88,29 +88,46 @@ export async function convertPDFToText(
         .json({ status: "failed", message: "PDF file not found" });
     }
 
+    let success: boolean;
+
     if (cluster.isPrimary) {
-      job.enqueue({
+      // If primary, enqueue directly with callback
+      success = await new Promise((resolve) => {
+        job.enqueue(
+          {
+            type: "convertPdf",
+            id: pdf.pdfId,
+            file_extension: "pdf",
+            dest_extension: "txt",
+            name: pdf.name,
+          },
+          resolve,
+        );
+      });
+    } else {
+      // If worker, send to primary and wait for completion
+      success = await sendJobAndWait({
         type: "convertPdf",
         id: pdf.pdfId,
         file_extension: "pdf",
         dest_extension: "txt",
         name: pdf.name,
       });
-    } else {
-      if (process.send)
-        process.send({
-          type: "convertPdf",
-          id: pdf.pdfId,
-          file_extension: "pdf",
-          dest_extension: "txt",
-          name: pdf.name,
-        });
     }
+
     await PDFtoWordService.deletePDFAfter10Minutes(pdf.pdfId);
-    res.status(200).json({
-      status: "success",
-      message: ".TXT file made successfully!",
-    });
+
+    if (success) {
+      res.status(200).json({
+        status: "success",
+        message: ".TXT file made successfully!",
+      });
+    } else {
+      res.status(500).json({
+        status: "Failed",
+        message: "Conversion failed",
+      });
+    }
   } catch (e) {
     res.status(500).json({
       status: "Failed",
@@ -120,7 +137,7 @@ export async function convertPDFToText(
 }
 export async function convertPDFToHTML(
   req: Request<{ pdfId: string }>,
-  res: Response
+  res: Response,
 ) {
   const { pdfId } = req.params;
   const pdf = await PDFtoWordService.getPDF(pdfId);
@@ -132,29 +149,44 @@ export async function convertPDFToHTML(
         .json({ status: "failed", message: "PDF file not found" });
     }
 
+    let success: boolean;
+
     if (cluster.isPrimary) {
-      job.enqueue({
+      success = await new Promise((resolve) => {
+        job.enqueue(
+          {
+            type: "convertPdf",
+            id: pdf.pdfId,
+            file_extension: "pdf",
+            dest_extension: "html",
+            name: pdf.name,
+          },
+          resolve,
+        );
+      });
+    } else {
+      success = await sendJobAndWait({
         type: "convertPdf",
         id: pdf.pdfId,
         file_extension: "pdf",
         dest_extension: "html",
         name: pdf.name,
       });
-    } else {
-      if (process.send)
-        process.send({
-          type: "convertPdf",
-          id: pdf.pdfId,
-          file_extension: "pdf",
-          dest_extension: "html",
-          name: pdf.name,
-        });
     }
+
     await PDFtoWordService.deletePDFAfter10Minutes(pdf.pdfId);
-    res.status(200).json({
-      status: "success",
-      message: "HTML file made successfully!",
-    });
+
+    if (success) {
+      res.status(200).json({
+        status: "success",
+        message: "HTML file made successfully!",
+      });
+    } else {
+      res.status(500).json({
+        status: "Failed",
+        message: "Conversion failed",
+      });
+    }
   } catch (e) {
     res.status(500).json({
       status: "Failed",
@@ -165,7 +197,7 @@ export async function convertPDFToHTML(
 
 export async function convertPDFToWord(
   req: Request<{ pdfId: string }>,
-  res: Response
+  res: Response,
 ) {
   const { pdfId } = req.params;
   const pdf = await PDFtoWordService.getPDF(pdfId);
@@ -198,7 +230,7 @@ export async function convertPDFToWord(
 
 export async function convertPDFToPNG(
   req: Request<{ pdfId: string }>,
-  res: Response
+  res: Response,
 ): Promise<any> {
   const { pdfId } = req.params;
   const pdf = await PDFtoWordService.getPDF(pdfId);
@@ -210,16 +242,23 @@ export async function convertPDFToPNG(
         .json({ status: "failed", message: "PDF file not found" });
     }
 
+    let success: boolean;
+
     if (cluster.isPrimary) {
-      job.enqueue({
-        type: "convertPdf",
-        id: pdf.pdfId,
-        file_extension: "pdf",
-        dest_extension: "png",
-        name: pdf.name,
+      success = await new Promise((resolve) => {
+        job.enqueue(
+          {
+            type: "convertPdf",
+            id: pdf.pdfId,
+            file_extension: "pdf",
+            dest_extension: "png",
+            name: pdf.name,
+          },
+          resolve,
+        );
       });
     } else {
-      (process as any).send({
+      success = await sendJobAndWait({
         type: "convertPdf",
         id: pdf.pdfId,
         file_extension: "pdf",
@@ -229,11 +268,19 @@ export async function convertPDFToPNG(
     }
 
     await PDFtoWordService.deletePDFAfter10Minutes(pdf.pdfId);
-    console.log("executed");
-    res.status(200).json({
-      status: "Success",
-      message: "PDF converted to PNG successfully.",
-    });
+
+    if (success) {
+      console.log("executed");
+      res.status(200).json({
+        status: "Success",
+        message: "PDF converted to PNG successfully.",
+      });
+    } else {
+      res.status(500).json({
+        status: "Failed",
+        message: "Conversion failed",
+      });
+    }
   } catch (e) {
     res.status(500).json({
       status: "Failed",
@@ -244,7 +291,7 @@ export async function convertPDFToPNG(
 
 export async function compressPDF(
   req: Request<{ pdfId: string }>,
-  res: Response
+  res: Response,
 ) {
   const { pdfId } = req.params;
   const pdf = await PDFtoWordService.getPDF(pdfId);
@@ -256,27 +303,42 @@ export async function compressPDF(
         .json({ status: "failed", message: "PDF file not found" });
     }
 
+    let success: boolean;
+
     if (cluster.isPrimary) {
-      job.enqueue({
+      success = await new Promise((resolve) => {
+        job.enqueue(
+          {
+            type: "compress",
+            id: pdf.pdfId,
+            file_extension: "pdf",
+            name: pdf.name,
+          },
+          resolve,
+        );
+      });
+    } else {
+      success = await sendJobAndWait({
         type: "compress",
         id: pdf.pdfId,
         file_extension: "pdf",
         name: pdf.name,
       });
-    } else {
-      if (process.send)
-        process.send({
-          type: "compress",
-          id: pdf.pdfId,
-          file_extension: "pdf",
-          name: pdf.name,
-        });
     }
+
     await PDFtoWordService.deletePDFAfter10Minutes(pdf.pdfId);
-    res.status(200).json({
-      status: "Success",
-      message: "PDF file compressed successfully!",
-    });
+
+    if (success) {
+      res.status(200).json({
+        status: "Success",
+        message: "PDF file compressed successfully!",
+      });
+    } else {
+      res.status(500).json({
+        status: "Failed",
+        message: "Compression failed",
+      });
+    }
   } catch (e) {
     res.status(500).json({
       status: "Failed",
@@ -287,7 +349,7 @@ export async function compressPDF(
 
 export async function mergePF(
   req: Request<{ firstPdfId: string; secondPdfId: string }>,
-  res: Response
+  res: Response,
 ) {
   const { firstPdfId, secondPdfId } = req.params;
 
@@ -300,29 +362,44 @@ export async function mergePF(
         .status(404)
         .json({ status: "failed", message: "PDF files not found" });
     }
+
+    let success: boolean;
+
     if (cluster.isPrimary) {
-      job.enqueue({
+      success = await new Promise((resolve) => {
+        job.enqueue(
+          {
+            type: "merge",
+            id: `${first.pdfId}-${second.pdfId}`,
+            file_extension: "pdf",
+            name: `${first.name}-${second.name}`,
+          },
+          resolve,
+        );
+      });
+    } else {
+      success = await sendJobAndWait({
         type: "merge",
         id: `${first.pdfId}-${second.pdfId}`,
         file_extension: "pdf",
         name: `${first.name}-${second.name}`,
       });
-    } else {
-      if (process.send)
-        process.send({
-          type: "merge",
-          id: `${first.pdfId}-${second.pdfId}`,
-          file_extension: "pdf",
-          name: `${first.name}-${second.name}`,
-        });
     }
+
     await PDFtoWordService.deletePDFAfter10Minutes(first.pdfId);
     await PDFtoWordService.deletePDFAfter10Minutes(second.pdfId);
 
-    res.status(200).json({
-      status: "Success",
-      message: "PDF files merged successfully!",
-    });
+    if (success) {
+      res.status(200).json({
+        status: "Success",
+        message: "PDF files merged successfully!",
+      });
+    } else {
+      res.status(500).json({
+        status: "Failed",
+        message: "Merge failed",
+      });
+    }
   } catch (e) {
     res.status(500).json({
       status: "Failed",

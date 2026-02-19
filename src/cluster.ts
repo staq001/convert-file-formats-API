@@ -13,15 +13,28 @@ if (cluster.isPrimary) {
   }
 
   cluster.on("message", async (worker, message, handle) => {
-    const { type, id, file_extension, dest_extension, name } = message;
+    const { type, id, file_extension, dest_extension, name, requestId } =
+      message;
 
-    job!.enqueue({
-      type,
-      id,
-      file_extension,
-      dest_extension,
-      name,
-    });
+    job!.enqueue(
+      {
+        type,
+        id,
+        file_extension,
+        dest_extension,
+        name,
+      },
+      (success) => {
+        // Send completion message back to worker
+        if (requestId) {
+          worker.send({
+            type: "jobComplete",
+            requestId,
+            success,
+          });
+        }
+      },
+    );
   });
 
   cluster.on("exit", (worker, code, signal) => {
