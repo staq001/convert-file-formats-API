@@ -15,7 +15,11 @@ export const util: Util = {
 
   deleteFolder: async (path: string) => {
     try {
-      await fs.rm(path, { recursive: true });
+      const stat = await fs.stat(path);
+      if (stat.isDirectory()) {
+        await fs.rm(path, { recursive: true });
+      }
+      return;
     } catch (err) {
       throw new Error(`${err}`);
     }
@@ -31,10 +35,4 @@ export const util: Util = {
         await fs.mkdir(path);
       });
   },
-
-  fiveMinutesThenDelete: async (path: string) => {
-    // do nothing
-  },
 };
-
-// question is, why not put it in the service? that way we delete the record from the db and delete the actual storage of the folders and files as well?

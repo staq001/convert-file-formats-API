@@ -8,6 +8,8 @@ export interface PDFtoWordService {
   uploadPDF: (details: options) => Promsie<void>;
 
   getPDF: (pfdId: string) => Promise<Pdf | undefined>;
+
+  deletePDFAfter10Minutes: (pdfId: string) => Promise<void>;
 }
 
 export interface DocxService {
@@ -20,7 +22,6 @@ export interface Util {
   deleteFile: (path: string) => Promise<void>;
   deleteFolder: (path: string) => Promise<void>;
   checkPath: (path: string) => Promise<void>;
-  fiveMinutesThenDelete: (path: string) => Promise<void>;
 }
 
 export interface Pdf {
