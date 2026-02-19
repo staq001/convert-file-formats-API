@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "none",
+    "lib": ["DOM", "ES2020", "ESNext"],
+    "strict": true,
+    "skipLibCheck": true,
+    "outDir": "./public",
+    "rootDir": "./public"
+  },
+  "include": ["public/app.ts"],
+  "exclude": ["node_modules", "dist"]
+}
