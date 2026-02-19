@@ -5,7 +5,9 @@
   "scripts": {
     "build": "apt-get update && apt-get install -y poppler-utils libreoffice ghostscript && npm run tsc",
     "tsc": "tsc",
-    "start": "node dist/src/cluster.js"
+    "tsc:public": "tsc -p tsconfig.public.json",
+    "start": "node dist/src/cluster.js",
+    "dev": "ts-node src/index.ts"
   },
   "author": "",
   "license": "ISC",

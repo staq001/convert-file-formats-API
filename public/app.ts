@@ -1,41 +1,64 @@
 /**VARIABLES */
 
+export {};
+
 const uploadFileBtn = document.getElementById(
-  "uploadFile"
+  "uploadFile",
 ) as HTMLButtonElement;
 const mergePDFBtn = document.getElementById("merge-pdf") as HTMLButtonElement;
 const compressPDFBtn = document.getElementById(
-  "compress-pdf"
+  "compress-pdf",
 ) as HTMLButtonElement;
 const downloadPDFBtn = document.getElementById(
-  "download-pdf"
+  "download-pdf",
 ) as HTMLButtonElement;
 const pdftoDocxBtn = document.getElementById(
-  "convert-pdf"
+  "convert-pdf",
 ) as HTMLButtonElement;
 const docxToHtmlBtn = document.getElementById(
-  "convert-docx-to-html"
+  "convert-docx-to-html",
 ) as HTMLButtonElement;
 const pdfToJpegBtn = document.getElementById(
-  "convert-pdf-to-jpeg"
+  "convert-pdf-to-jpeg",
 ) as HTMLButtonElement;
 const docxToPdfBtn = document.getElementById(
-  "convert-docx-to-pdf"
+  "convert-docx-to-pdf",
 ) as HTMLButtonElement;
 const pdfToTxtBtn = document.getElementById("pdf-to-txt") as HTMLButtonElement;
 const pdfToHtmlBtn = document.getElementById(
-  "pdf-to-html"
+  "pdf-to-html",
 ) as HTMLButtonElement;
 
 /**FUNCTIONS */
 function toggleButton(
   button1: HTMLElement,
   button2: HTMLElement,
-  value?: string | undefined
+  value?: string | undefined,
 ) {
   button1.style.display = "none";
   button2.style.display = "block";
   if (value) button2.setAttribute("appropos", value);
+}
+
+function showToast(message: string, type: "success" | "error" = "success") {
+  let container = document.querySelector(".toast-container") as HTMLElement;
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+    if (container && container.childElementCount === 0) {
+      container.remove();
+    }
+  }, 2600);
 }
 
 async function fetchUrl(
@@ -44,7 +67,7 @@ async function fetchUrl(
   method: string,
   error: string,
   body: FormData | undefined = undefined,
-  headers: any | undefined = undefined
+  headers: any | undefined = undefined,
 ) {
   try {
     const response = await fetch(url, {
@@ -54,11 +77,17 @@ async function fetchUrl(
     });
 
     if (response.ok) {
-      alert(message); // same
+      showToast(message, "success");
       return response.json();
-    } else console.error(error);
+    } else {
+      console.error(error);
+      showToast(error, "error");
+      return {};
+    }
   } catch (e) {
     console.error("An error occurred--", e);
+    showToast("An error occurred", "error");
+    return {};
   }
 }
 
@@ -72,7 +101,7 @@ async function downloadFile(
   attribute: string,
   fileType: string,
   operation?: string,
-  headers?: any
+  headers?: any,
 ) {
   try {
     const response = await fetch(
@@ -80,11 +109,12 @@ async function downloadFile(
       {
         method: "GET",
         headers,
-      }
+      },
     );
 
     if (response.status === 404) {
-      alert("File has been deleted, Please restart operation");
+      showToast("File has been deleted, Please restart operation", "error");
+      return;
     }
 
     if (!response.ok) {
@@ -100,6 +130,7 @@ async function downloadFile(
     window.URL.revokeObjectURL(url);
   } catch (e) {
     console.error("An error occurred--", e);
+    showToast("Download failed", "error");
   }
 }
 
@@ -125,7 +156,7 @@ switch (window.location.href.split("pages")[1].toString()) {
             fd,
             {
               filename: file.name,
-            }
+            },
           );
           toggleButton(uploadFileBtn, compressPDFBtn, response.id);
         }
@@ -141,7 +172,7 @@ switch (window.location.href.split("pages")[1].toString()) {
         `/api/compress-pdf/${attribute}`,
         "PDF File compressed successfully",
         "PUT",
-        "Compression Failed"
+        "Compression Failed",
       );
 
       if (response?.status?.toLowerCase() === "success") {
@@ -175,7 +206,7 @@ switch (window.location.href.split("pages")[1].toString()) {
             fd,
             {
               filename: file.name,
-            }
+            },
           );
           toggleButton(uploadFileBtn, pdftoDocxBtn, response.id);
         }
@@ -190,7 +221,7 @@ switch (window.location.href.split("pages")[1].toString()) {
         `/api/convert-pdf-to-word/${attribute}`,
         "PDF File converted to Docx successfully",
         "PUT",
-        "Conversion Failed"
+        "Conversion Failed",
       );
 
       if (response?.status?.toLowerCase() === "success") {
@@ -224,7 +255,7 @@ switch (window.location.href.split("pages")[1].toString()) {
             fd,
             {
               filename: file.name,
-            }
+            },
           );
           toggleButton(uploadFileBtn, docxToHtmlBtn, response.id);
         }
@@ -237,7 +268,7 @@ switch (window.location.href.split("pages")[1].toString()) {
         `/api/convert-word-to-html/${attribute}`,
         "Docx File converted to HTML successfully",
         "PUT",
-        "Conversion Failed"
+        "Conversion Failed",
       );
 
       if (response?.status?.toLowerCase() === "success") {
@@ -270,7 +301,7 @@ switch (window.location.href.split("pages")[1].toString()) {
             fd,
             {
               filename: file.name,
-            }
+            },
           );
           toggleButton(uploadFileBtn, pdfToJpegBtn, response.id);
         }
@@ -285,7 +316,7 @@ switch (window.location.href.split("pages")[1].toString()) {
         `/api/convert-pdf-to-jpeg/${attribute}`,
         "PDF File converted to JPEG successfully",
         "PUT",
-        "Conversion Failed"
+        "Conversion Failed",
       );
 
       if (response?.status?.toLowerCase() === "success") {
@@ -320,7 +351,7 @@ switch (window.location.href.split("pages")[1].toString()) {
             fd,
             {
               filename: file.name,
-            }
+            },
           );
           toggleButton(uploadFileBtn, docxToPdfBtn, response.id);
         }
@@ -333,7 +364,7 @@ switch (window.location.href.split("pages")[1].toString()) {
         `/api/convert-docx-to-pdf/${attribute}`,
         "DOCX File converted to PDF successfully",
         "PUT",
-        "Conversion Failed"
+        "Conversion Failed",
       );
 
       if (response?.status?.toLowerCase() === "success") {
@@ -363,7 +394,7 @@ switch (window.location.href.split("pages")[1].toString()) {
               fd,
               {
                 filename: files[i].name,
-              }
+              },
             );
             if (i === 0) {
               mergePDFBtn.setAttribute("appropos", response.id);
@@ -386,7 +417,7 @@ switch (window.location.href.split("pages")[1].toString()) {
         `/api/merge-pdfs/${first}/${second}`,
         "PDF Files Merged Successfully!",
         "PUT",
-        "Merge Failed"
+        "Merge Failed",
       );
 
       if (response?.status?.toLowerCase() === "success") {
@@ -420,7 +451,7 @@ switch (window.location.href.split("pages")[1].toString()) {
             fd,
             {
               filename: file.name,
-            }
+            },
           );
           toggleButton(uploadFileBtn, pdfToTxtBtn, response.id);
         }
@@ -436,7 +467,7 @@ switch (window.location.href.split("pages")[1].toString()) {
         `/api/convert-pdf-to-text/${attribute}`,
         "PDF File converted to .TXT successfully",
         "PUT",
-        "Conversion Failed"
+        "Conversion Failed",
       );
 
       if (response?.status?.toLowerCase() === "success") {
@@ -470,7 +501,7 @@ switch (window.location.href.split("pages")[1].toString()) {
             fd,
             {
               filename: file.name,
-            }
+            },
           );
           toggleButton(uploadFileBtn, pdfToHtmlBtn, response.id);
         }
@@ -485,7 +516,7 @@ switch (window.location.href.split("pages")[1].toString()) {
         `/api/convert-pdf-to-html/${attribute}`,
         "PDF File converted to HTML successfully",
         "PUT",
-        "Conversion Failed"
+        "Conversion Failed",
       );
 
       if (response?.status?.toLowerCase() === "success") {
